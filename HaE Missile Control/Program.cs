@@ -82,20 +82,20 @@ namespace IngameScript
         }
 
         /*==========| Event callbacks |==========*/
-        void OnTargetDetected(MyDetectedEntityInfo target)
+        void OnTargetDetected(MyDetectedEntityInfo target, int ticksFromLastFind)
         {
             Echo($"Target detected\n@{target.Position}");
 
             if (targetGuidance)
             {
-                var desiredAccel = guidance.CalculateAPNAccel(target);
+                var desiredAccel = guidance.CalculateAPNAccel(target, ticksFromLastFind);
 
                 Echo($"desiredAccel:\n{desiredAccel}");
                 flightControl.Accelerate(desiredAccel);
             }
         }
 
-        void OnDestinationPosition()
+        void OnTargetSpeed()
         {
 
         }
@@ -141,7 +141,7 @@ namespace IngameScript
             yield return true;
 
             flightControl = new FlightControl(rc, gyros, thrusters);
-            flightControl.OnDestinationPosition += OnDestinationPosition;
+            flightControl.OnTargetSpeed += OnTargetSpeed;
             yield return true;
 
             guidance = new ProportionalGuidance(rc);

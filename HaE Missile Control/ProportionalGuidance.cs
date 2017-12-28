@@ -20,8 +20,12 @@ namespace IngameScript
     {
         public class ProportionalGuidance
         {
-            private const float PGAIN = 40;
-            private const float NT = 6;
+            private const float N = 4;
+            private const float NT = 0.1635f;
+
+            private int lastTargetTime = 1;
+            private float PGAIN { get { return N * lastTargetTime; } }
+            private float TargetAccel { get { return NT * lastTargetTime; } }
 
             private MyDetectedEntityInfo targetInfo;
             private IMyShipController rc;
@@ -40,6 +44,7 @@ namespace IngameScript
             private Vector3D LosDelta { get { return NewLos - OldLos; } }
             private double LOSRate { get { return LosDelta.Length(); } }
 
+            
 
 
             public ProportionalGuidance(IMyShipController rc)
@@ -47,9 +52,9 @@ namespace IngameScript
                 this.rc = rc;
             }
 
-            public Vector3D CalculateAPNAccel(MyDetectedEntityInfo info)
+            public Vector3D CalculateAPNAccel(MyDetectedEntityInfo info, int ticksFromLastFind)
             {
-                UpdateTargetInfo(info);
+                UpdateTargetInfo(info, ticksFromLastFind);
 
                 Vector3D omega = CalculateRotVec();
                 Vector3D nRange = Vector3D.Normalize(RangeVec);
@@ -58,7 +63,7 @@ namespace IngameScript
                 double mRelativeVelocity = RelativeVelocityVec.Length();
 
 
-                Vector3D accelerationNormal = Vector3D.Cross(PGAIN * RelativeVelocityVec, omega);
+                //Vector3D accelerationNormal = Vector3D.Cross(PGAIN * RelativeVelocityVec, omega);
                 //Vector3D accelerationNormal = -Vector3D.Cross(PGAIN * mRelativeVelocity * nRange, omega);
                 //Vector3D accelerationNormal = -Vector3D.Cross(PGAIN * mRelativeVelocity * nMissileVelocity, omega);
 
@@ -66,9 +71,9 @@ namespace IngameScript
                 //MODDB GAMEDEV THINGY
 
                 //Vector3D accelerationNormal = NewLos * PGAIN * RelativeVelocityVec.Length() * LOSRate;
-                //Vector3D accelerationNormal = NewLos * PGAIN * RelativeVelocityVec.Length() * LOSRate + LosDelta * NT * (0.5 * PGAIN);
+                Vector3D accelerationNormal = NewLos * PGAIN * RelativeVelocityVec.Length() * LOSRate + LosDelta * TargetAccel * (0.5 * PGAIN);
 
-                return Reject(accelerationNormal, MyVelocityVec);
+                return Reject(accelerationNormal, RelativeVelocityVec);
                 //return Vector3D.Reject(accelerationNormal, nRange);
                 //return accelerationNormal;
             }
@@ -81,9 +86,10 @@ namespace IngameScript
                 return RxV / RdR;
             }
 
-            private void UpdateTargetInfo(MyDetectedEntityInfo info)
+            private void UpdateTargetInfo(MyDetectedEntityInfo info, int ticksFromLastFind)
             {
                 targetInfo = info;
+                lastTargetTime = ticksFromLastFind;
 
                 OldLos = NewLos;
                 NewLos = Vector3D.Normalize(RangeVec);

@@ -20,7 +20,7 @@ namespace IngameScript
     {
         public class FlightControl
         {
-            public Action OnDestinationPosition;
+            public Action OnTargetSpeed;
 
             private double speedLimit = 100;
 
@@ -80,7 +80,7 @@ namespace IngameScript
                 }
                 else
                 {
-                    OnDestinationPosition();
+                    OnTargetSpeed();
                 }
             }
 

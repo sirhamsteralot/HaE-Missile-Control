@@ -24,7 +24,7 @@ namespace IngameScript
             private MyRelationsBetweenPlayerAndBlock[] bad = { MyRelationsBetweenPlayerAndBlock.Enemies, MyRelationsBetweenPlayerAndBlock.Neutral };
             private int ticksTimeout = 480;
 
-            public Action<MyDetectedEntityInfo> OnTargetFound;
+            public Action<MyDetectedEntityInfo, int> OnTargetFound;
             public bool foundInitialTarget = false;
             public bool hasTarget = false;
             public MyDetectedEntityInfo targetI;
@@ -115,8 +115,8 @@ namespace IngameScript
                     if (tempTarget.Relationship == bad[0] || tempTarget.Relationship == bad[1])
                     {
                         targetI = tempTarget;
+                        OnTargetFound?.Invoke(targetI, ticksFromLastFind);
                         ticksFromLastFind = 0;
-                        OnTargetFound?.Invoke(targetI);
 
                         return true;
                     }
