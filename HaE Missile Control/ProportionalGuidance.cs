@@ -20,12 +20,12 @@ namespace IngameScript
     {
         public class ProportionalGuidance
         {
-            private const float N = 4;
+            private const float N = 11.21f;
             private const float NT = 0.1635f;
 
             private int lastTargetTime = 1;
             private float PGAIN { get { return N * lastTargetTime; } }
-            private float TargetAccel { get { return NT * lastTargetTime; } }
+            private float TargetAccel { get { return (float)SpeedDelta.Length() / lastTargetTime; } }
 
             private MyDetectedEntityInfo targetInfo;
             private IMyShipController rc;
@@ -44,7 +44,11 @@ namespace IngameScript
             private Vector3D LosDelta { get { return NewLos - OldLos; } }
             private double LOSRate { get { return LosDelta.Length(); } }
 
-            
+            private Vector3D OldTargetSpeed;
+            private Vector3D NewTargetSpeed;
+            private Vector3D SpeedDelta { get { return NewTargetSpeed - OldTargetSpeed; } }
+
+
 
 
             public ProportionalGuidance(IMyShipController rc)
@@ -93,6 +97,9 @@ namespace IngameScript
 
                 OldLos = NewLos;
                 NewLos = Vector3D.Normalize(RangeVec);
+
+                OldTargetSpeed = NewTargetSpeed;
+                NewTargetSpeed = info.Velocity;
             }
 
             private static Vector3D Project(Vector3D one, Vector3D two) //project a on b
