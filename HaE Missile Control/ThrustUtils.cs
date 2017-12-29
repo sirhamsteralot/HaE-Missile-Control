@@ -30,6 +30,17 @@ namespace IngameScript
                     }
                 }
             }
+
+            public static void SetThrustNotInDirection(List<IMyThrust> thrusters, Vector3D direction, double percent)
+            {
+                foreach (var thrust in thrusters)
+                {
+                    if (Vector3D.Dot(thrust.WorldMatrix.Backward, direction) < 0.9)
+                    {
+                        thrust.ThrustOverridePercentage = (float)percent;
+                    }
+                }
+            }
         }
     }
 }

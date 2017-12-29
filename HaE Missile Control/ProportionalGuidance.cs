@@ -20,12 +20,16 @@ namespace IngameScript
     {
         public class ProportionalGuidance
         {
-            private const float N = 3.3f;
-            private const float NT = 0.99f;
+            private const float N = 5f;
+            private const float NT = 1f;
 
-            private int lastTargetTime = 1;
-            private float PGAIN { get { return N * lastTargetTime; } }
-            private float TargetAccel { get { return (float)Math.Abs(RelativeSpeedDelta.Length()) * NT; } }
+            int ticksFromLastFind = 1;
+
+            private float PGAIN { get { return N; } }
+            private float TargetAccel { get {
+                                                float RelativeSpeedF = (float)Math.Abs(RelativeSpeedDelta.Length());
+                                                return (RelativeSpeedF > N) ? RelativeSpeedF * NT : 0;
+                                            } }
 
             private MyDetectedEntityInfo targetInfo;
             private IMyShipController rc;
@@ -64,7 +68,16 @@ namespace IngameScript
 
                 double mRelativeVelocity = RelativeVelocityVec.Length();
 
-                Vector3D accelerationNormal = NewLos * PGAIN * mRelativeVelocity * LOSRate + LosDelta * PGAIN * TargetAccel / 2;
+                // Vector3D accelerationNormal = (NewLos + LosDelta) * PGAIN * mRelativeVelocity * LOSRate + LosDelta * PGAIN * TargetAccel / 2;
+
+                //Vector3D accelerationNormal = PGAIN * RelativeVelocityVec.Cross(CalculateRotVec());
+
+                Vector3D temp = MissileVelocityVec != Vector3D.Zero ? MissileVelocityVec : RangeVec;
+                Vector3D accelerationNormal = -PGAIN * mRelativeVelocity * Vector3D.Normalize(temp).Cross(CalculateRotVec());
+
+                //Vector3D accelerationNormal = -PGAIN * mRelativeVelocity * Vector3D.Normalize(RangeVec).Cross(CalculateRotVec());
+
+                //accelerationNormal -= accelerationNormal / (accelerationNormal.Length() * 2);
 
                 return accelerationNormal;
             }
@@ -80,7 +93,7 @@ namespace IngameScript
             private void UpdateTargetInfo(MyDetectedEntityInfo info, int ticksFromLastFind)
             {
                 targetInfo = info;
-                lastTargetTime = ticksFromLastFind;
+                this.ticksFromLastFind = ticksFromLastFind;
 
                 OldLos = NewLos;
                 NewLos = Vector3D.Normalize(RangeVec);
