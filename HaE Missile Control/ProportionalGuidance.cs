@@ -20,18 +20,19 @@ namespace IngameScript
     {
         public class ProportionalGuidance
         {
-            private const float N = 11.21f;
-            private const float NT = 0.1635f;
+            private const float N = 10f;
 
             private int lastTargetTime = 1;
             private float PGAIN { get { return N * lastTargetTime; } }
-            private float TargetAccel { get { return (float)SpeedDelta.Length() / lastTargetTime; } }
+            private float TargetAccel { get { return (float)Math.Abs(RelativeSpeedDelta.Length() / lastTargetTime); } }
 
             private MyDetectedEntityInfo targetInfo;
             private IMyShipController rc;
 
 
             private Vector3D MyVelocityVec { get { return rc.GetShipVelocities().LinearVelocity; } }
+            private Vector3D OldMyVelocityVec;
+            private Vector3D NewMyVelocityVec;
             private Vector3D MyPositionVec { get { return rc.GetPosition(); } }
 
             private Vector3D TargetVelocityVec { get { return targetInfo.Velocity; } }
@@ -46,7 +47,7 @@ namespace IngameScript
 
             private Vector3D OldTargetSpeed;
             private Vector3D NewTargetSpeed;
-            private Vector3D SpeedDelta { get { return NewTargetSpeed - OldTargetSpeed; } }
+            private Vector3D RelativeSpeedDelta { get { return (NewTargetSpeed - OldTargetSpeed) - (NewMyVelocityVec - OldMyVelocityVec); } }
 
 
 
@@ -67,19 +68,21 @@ namespace IngameScript
                 double mRelativeVelocity = RelativeVelocityVec.Length();
 
 
-                //Vector3D accelerationNormal = Vector3D.Cross(PGAIN * RelativeVelocityVec, omega);
-                //Vector3D accelerationNormal = -Vector3D.Cross(PGAIN * mRelativeVelocity * nRange, omega);
-                //Vector3D accelerationNormal = -Vector3D.Cross(PGAIN * mRelativeVelocity * nMissileVelocity, omega);
+                //Vector3D accelerationNormal = PGAIN * Vector3D.Cross(RelativeVelocityVec, omega);
+                //Vector3D accelerationNormal = -PGAIN * Vector3D.Cross(mRelativeVelocity * nRange, omega);
+                //Vector3D accelerationNormal = -PGAIN * Vector3D.Cross(mRelativeVelocity * nMissileVelocity, omega);
 
 
                 //MODDB GAMEDEV THINGY
 
-                //Vector3D accelerationNormal = NewLos * PGAIN * RelativeVelocityVec.Length() * LOSRate;
-                Vector3D accelerationNormal = NewLos * PGAIN * RelativeVelocityVec.Length() * LOSRate + LosDelta * TargetAccel * (0.5 * PGAIN);
+                //Vector3D accelerationNormal = NewLos * PGAIN * mRelativeVelocity * LOSRate;
+                //Vector3D accelerationNormal = NewLos * PGAIN * mRelativeVelocity * LOSRate + LosDelta * TargetAccel * (0.5 * PGAIN);
+                Vector3D accelerationNormal = NewLos * PGAIN * -LOSRate * LOSRate + LosDelta * TargetAccel * (0.5 * PGAIN);
 
-                return Reject(accelerationNormal, RelativeVelocityVec);
+                //return Reject(accelerationNormal, RelativeVelocityVec);
                 //return Vector3D.Reject(accelerationNormal, nRange);
-                //return accelerationNormal;
+                //return accelerationNormal * NewLos;
+                return accelerationNormal;
             }
 
             private Vector3D CalculateRotVec()
@@ -100,6 +103,9 @@ namespace IngameScript
 
                 OldTargetSpeed = NewTargetSpeed;
                 NewTargetSpeed = info.Velocity;
+
+                OldMyVelocityVec = NewMyVelocityVec;
+                NewMyVelocityVec = MyVelocityVec;
             }
 
             private static Vector3D Project(Vector3D one, Vector3D two) //project a on b
