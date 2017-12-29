@@ -91,7 +91,7 @@ namespace IngameScript
                 var desiredAccel = guidance.CalculateAPNAccel(target, ticksFromLastFind);
 
                 Echo($"desiredAccel:\n{desiredAccel}");
-                flightControl.Accelerate(desiredAccel);
+                flightControl.DirectControl(desiredAccel);
             }
         }
 

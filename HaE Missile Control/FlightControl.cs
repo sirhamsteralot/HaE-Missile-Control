@@ -84,6 +84,14 @@ namespace IngameScript
                 }
             }
 
+            public void DirectControl(Vector3D direction)
+            {
+                direction.Normalize();
+
+                GyroUtils.PointInDirection(gyros, control, direction, 2);
+                ThrustUtils.SetThrust(thrusters, control.WorldMatrix.Forward, 100);
+            }
+
             public void Accelerate(Vector3D acceleration)
             {
                 speedTarget = Vector3D.ClampToSphere(control.GetShipVelocities().LinearVelocity + acceleration, speedLimit);
