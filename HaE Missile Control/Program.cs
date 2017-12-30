@@ -26,7 +26,7 @@ namespace IngameScript
         LongRangeDetection longRangeDetection;
         ACPWrapper antennaComms;
         FlightControl flightControl;
-        ProportionalGuidance guidance;
+        TargetGuidance guidance;
 
         List<IMyCameraBlock> cameras;
         List<IMyGyro> gyros;
@@ -144,7 +144,7 @@ namespace IngameScript
             flightControl.OnTargetSpeed += OnTargetSpeed;
             yield return true;
 
-            guidance = new ProportionalGuidance(rc);
+            guidance = new TargetGuidance(rc);
             yield return true;
 
             Echo("Initialized!");

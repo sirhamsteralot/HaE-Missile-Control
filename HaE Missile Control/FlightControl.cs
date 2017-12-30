@@ -89,7 +89,7 @@ namespace IngameScript
                 direction.Normalize();
 
                 GyroUtils.PointInDirection(gyros, control, direction, 2);
-                ThrustUtils.SetThrustBasedDot(thrusters, direction);
+                ThrustUtils.SetThrustBasedDot(thrusters, direction, 4);
             }
 
             public void Accelerate(Vector3D acceleration)

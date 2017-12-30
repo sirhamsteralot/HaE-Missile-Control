@@ -18,7 +18,7 @@ namespace IngameScript
 {
     partial class Program
     {
-        public class ProportionalGuidance
+        public class TargetGuidance
         {
             private const float N = 3f;
             private const float NT = 1f;
@@ -57,7 +57,7 @@ namespace IngameScript
 
 
 
-            public ProportionalGuidance(IMyShipController rc)
+            public TargetGuidance(IMyShipController rc)
             {
                 this.rc = rc;
             }
@@ -66,7 +66,7 @@ namespace IngameScript
             {
                 UpdateTargetInfo(info, ticksFromLastFind);
 
-                return PPN();
+                return APN();
             }
 
             private Vector3D PPN()
@@ -75,7 +75,7 @@ namespace IngameScript
 
                 Vector3D accelerationNormal;
                 accelerationNormal = PGAIN * RelativeVelocityVec.Cross(CalculateRotVec());      //PPN term
-
+                accelerationNormal += NewLos;                                                   //LosBias term
                 accelerationNormal -= rc.GetNaturalGravity();                                   //Gravity term
 
                 return accelerationNormal;
@@ -88,7 +88,8 @@ namespace IngameScript
 
                 Vector3D accelerationNormal;
                 accelerationNormal = PGAIN * RelativeVelocityVec.Cross(CalculateRotVec());      //PPN term
-                accelerationNormal += nRelativeVelocityVec + PGAIN * TargetAccel / 2;            //APN term
+                accelerationNormal += PGAIN * TargetAccel / 2;                                  //APN term
+                accelerationNormal += NewLos;                                                   //LosBias term
                 accelerationNormal -= rc.GetNaturalGravity();                                   //Gravity term
 
                 return accelerationNormal;

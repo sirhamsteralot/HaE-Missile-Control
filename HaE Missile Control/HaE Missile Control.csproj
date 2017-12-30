@@ -107,7 +107,7 @@
     </AdditionalFiles>
     <Compile Include="Program.cs" />
     <Compile Include="ProjectorProjection.cs" />
-    <Compile Include="ProportionalGuidance.cs" />
+    <Compile Include="TargetGuidance.cs" />
     <Compile Include="Readme.cs" />
     <AdditionalFiles Include="thumb.png" />
     <AdditionalFiles Include="MDK\whitelist.cache" />

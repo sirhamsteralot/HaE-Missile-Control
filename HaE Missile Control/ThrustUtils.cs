@@ -31,12 +31,12 @@ namespace IngameScript
                 }
             }
 
-            public static void SetThrustBasedDot(List<IMyThrust> thrusters, Vector3D direction)
+            public static void SetThrustBasedDot(List<IMyThrust> thrusters, Vector3D direction, double mulitplier = 1)
             {
                 foreach (var thrust in thrusters)
                 {
                     double thrustpercentage = Vector3D.Dot(thrust.WorldMatrix.Backward, direction);
-                    thrust.ThrustOverridePercentage = (float)(thrustpercentage);
+                    thrust.ThrustOverridePercentage = (float)(thrustpercentage * mulitplier);
                 }
             }
 
