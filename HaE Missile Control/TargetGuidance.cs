@@ -23,12 +23,13 @@ namespace IngameScript
             private const float N = 3f;
             private const float NT = 1f;
 
-            int ticksFromLastFind = 1;
+            int _ticksFromLastFind = 1;
+            int TicksFromLastFind { get { return (_ticksFromLastFind >= 1) ? TicksFromLastFind : 1; } }
 
             private float PGAIN { get { return N; } }
             private float TargetAccel { get {
                                                 float RelativeSpeedF = (float)Math.Abs(RelativeSpeedDelta.Length());
-                                                return (RelativeSpeedF > N) ? RelativeSpeedF / ticksFromLastFind * NT : 0;
+                                                return (RelativeSpeedF > N) ? RelativeSpeedF / TicksFromLastFind * NT : 0;
                                             } }
 
             private MyDetectedEntityInfo targetInfo;
@@ -106,7 +107,7 @@ namespace IngameScript
             private void UpdateTargetInfo(MyDetectedEntityInfo info, int ticksFromLastFind)
             {
                 targetInfo = info;
-                this.ticksFromLastFind = ticksFromLastFind;
+                this._ticksFromLastFind = ticksFromLastFind;
 
                 OldLos = NewLos;
                 NewLos = Vector3D.Normalize(RangeVec);
