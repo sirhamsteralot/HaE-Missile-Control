@@ -29,7 +29,7 @@ namespace IngameScript
             private List<IMyThrust> thrusters;
             
 
-            private Vector3D speedTarget;
+            private Vector3D accelerateTarget;
 
             public FlightControl(IMyShipController control, List<IMyGyro> gyros, List<IMyThrust> thrusters)
             {
@@ -40,61 +40,23 @@ namespace IngameScript
 
             public void Main()
             {
-                if (speedTarget == null || speedTarget == Vector3D.Zero)
+                if (accelerateTarget == null || accelerateTarget == Vector3D.Zero || accelerateTarget == Vector3D.PositiveInfinity)
                     return;
 
 
-                Vector3D normalizedTarget = -control.GetNaturalGravity();
-
-                var dotProd = Vector3D.Dot(control.GetShipVelocities().LinearVelocity, speedTarget);
-                if (control.GetShipVelocities().LinearVelocity.LengthSquared() < 10)
-                {
-                    normalizedTarget += speedTarget;
-                }  
-                else
-                {
-                    if (dotProd > 0)
-                        normalizedTarget += Reflect(control.GetShipVelocities().LinearVelocity, speedTarget, 5);
-                    else
-                        normalizedTarget += - control.GetShipVelocities().LinearVelocity;
-                }
-                    
-
-                normalizedTarget.Normalize();
-
-                GyroUtils.PointInDirection(gyros, control, normalizedTarget, 2);
-
-                
-                if (Vector3D.DistanceSquared(speedTarget, control.GetShipVelocities().LinearVelocity) > 0.25)
-                {
-                    var forwardDot = Vector3D.Dot(control.WorldMatrix.Forward, normalizedTarget);
-
-                    if (forwardDot > 0.707) //Only fire thrusters when within 45 degrees
-                    {
-                        ThrustUtils.SetThrust(thrusters, control.WorldMatrix.Forward, forwardDot * speedTarget.Length());
-                    }
-                    else
-                    {
-                        ThrustUtils.SetThrust(thrusters, control.WorldMatrix.Forward, 0);
-                    }
-                }
-                else
-                {
-                    OnTargetSpeed();
-                }
+                GyroUtils.PointInDirection(gyros, control, accelerateTarget, 2);
+                ThrustUtils.SetThrustBasedDot(thrusters, accelerateTarget, 4);
             }
 
             public void DirectControl(Vector3D direction)
             {
                 direction.Normalize();
-
-                GyroUtils.PointInDirection(gyros, control, direction, 2);
-                ThrustUtils.SetThrustBasedDot(thrusters, direction, 4);
+                accelerateTarget = direction;
             }
 
             public void Accelerate(Vector3D acceleration)
             {
-                speedTarget = Vector3D.ClampToSphere(control.GetShipVelocities().LinearVelocity + acceleration, speedLimit);
+                accelerateTarget = Vector3D.ClampToSphere(control.GetShipVelocities().LinearVelocity + acceleration, speedLimit);
             }
 
             private static Vector3D Project(Vector3D one, Vector3D two) //project a on b

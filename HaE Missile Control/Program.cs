@@ -53,31 +53,36 @@ namespace IngameScript
                 initializer.Dispose();
             else
                 return;
-                
 
-            switch (args)
+            long senderId;
+            string[] messages = antennaComms.Main(args, out senderId);
+            if (messages != null)
             {
-                case "GetTarget":
+                foreach (var message in messages)
+                {
+                    ParseMessage(message);
+                }
+            }
+
+            EveryTick();
+        }
+
+        void ParseMessage(string message)
+        {
+            switch (message)
+            {
+                case "Target":
                     NewLongRangeDetection();
                     break;
-                case "GoToOrigin":
-                    goToOrig = true;
-                    break;
-                case "TargetGuidance":
+                case "Attack":
                     targetGuidance = true;
                     break;
             }
+        }
 
-            if (longRangeDetection != null)
-            {
-                longRangeDetection.DoDetect();
-            }
-                
-            if (flightControl != null && goToOrig)
-            {
-                    flightControl.Accelerate(Vector3D.ClampToSphere(Vector3D.Zero - rc.GetPosition(), 50));
-            }
-
+        void EveryTick()
+        {
+            longRangeDetection?.DoDetect();
             flightControl?.Main();
         }
 
@@ -93,11 +98,6 @@ namespace IngameScript
                 Echo($"desiredAccel:\n{desiredAccel}");
                 flightControl.DirectControl(desiredAccel);
             }
-        }
-
-        void OnTargetSpeed()
-        {
-
         }
 
         /*=========| Helper Functions |=========*/
@@ -141,7 +141,6 @@ namespace IngameScript
             yield return true;
 
             flightControl = new FlightControl(rc, gyros, thrusters);
-            flightControl.OnTargetSpeed += OnTargetSpeed;
             yield return true;
 
             guidance = new TargetGuidance(rc);
@@ -178,4 +177,3 @@ namespace IngameScript
         }
     }
 }
- 

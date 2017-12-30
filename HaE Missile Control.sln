@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HaE Missile Control", "HaE Missile Control\HaE Missile Control.csproj", "{2B07A92F-229C-47AE-A23C-CD596283FE39}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HaE Missile GroundStation", "HaE Missile GroundStation\HaE Missile GroundStation.csproj", "{524BD585-ADE2-4D48-9E95-2CDA2DF45D6C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -12,6 +14,8 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{2B07A92F-229C-47AE-A23C-CD596283FE39}.Debug|x64.ActiveCfg = Debug|x64
 		{2B07A92F-229C-47AE-A23C-CD596283FE39}.Debug|x64.Build.0 = Debug|x64
+		{524BD585-ADE2-4D48-9E95-2CDA2DF45D6C}.Debug|x64.ActiveCfg = Debug|x64
+		{524BD585-ADE2-4D48-9E95-2CDA2DF45D6C}.Debug|x64.Build.0 = Debug|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
