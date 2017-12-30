@@ -56,6 +56,13 @@ namespace IngameScript
         void OnMissileAdded(MissileManagement.MissileInfo info)
         {
             Echo($"Missile with ID {info.id} added.");
+            Me.CustomData = missileManagement.MissileCount.ToString();
+        }
+
+        void OnMissileRemoved(MissileManagement.MissileInfo info)
+        {
+            Echo($"Missile with ID {info.id} removed.");
+            Me.CustomData = missileManagement.MissileCount.ToString();
         }
 
         /*=========| Helper Functions |=========*/
@@ -68,7 +75,7 @@ namespace IngameScript
                     missileManagement.RefreshMissileList();
                     return true;
                 case "TargetMissile":
-                    MissileManagement.MissileInfo missile = missileManagement.GetMissileCloseTo(Me.GetPosition(), MissileManagement.MissileType.SRInterceptor, true);
+                    MissileManagement.MissileInfo missile = missileManagement.GetMissileCloseTo(Me.GetPosition(), MissileManagement.MissileType.SRInterceptor, false);
                     missileManagement.SendCommand(missile, "Target");
                     return true;
 
@@ -99,6 +106,7 @@ namespace IngameScript
 
             missileManagement = new MissileManagement(antennaComms);
             missileManagement.OnMissileAdded += OnMissileAdded;
+            missileManagement.OnMissileRemoved += OnMissileRemoved;
             yield return true;
 
             Echo("Initialized!");

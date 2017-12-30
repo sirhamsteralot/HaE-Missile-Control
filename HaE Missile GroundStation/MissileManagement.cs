@@ -20,7 +20,10 @@ namespace IngameScript
     {
         public class MissileManagement
         {
+            public int MissileCount { get { return missileList.Count; } }
+
             public Action<MissileInfo> OnMissileAdded;
+            public Action<MissileInfo> OnMissileRemoved;
 
             private HashSet<MissileInfo> missileList;
             private ACPWrapper antennaProtocol;
@@ -109,7 +112,10 @@ namespace IngameScript
                 }
 
                 if (delete && tempInfo != default(MissileInfo))
+                {
                     missileList.Remove(tempInfo);
+                    OnMissileRemoved?.Invoke(tempInfo);
+                }
 
                 return tempInfo;
             }
@@ -127,7 +133,10 @@ namespace IngameScript
                 }
 
                 if (delete && tempInfo != default(MissileInfo))
+                {
                     missileList.Remove(tempInfo);
+                    OnMissileRemoved?.Invoke(tempInfo);
+                }
 
                 return tempInfo;
             }
@@ -142,7 +151,10 @@ namespace IngameScript
                 }
 
                 if (delete && tempInfo != default(MissileInfo))
+                {
                     missileList.Remove(tempInfo);
+                    OnMissileRemoved?.Invoke(tempInfo);
+                }
 
                 return tempInfo;
             }
