@@ -85,13 +85,13 @@ namespace IngameScript
                 return false;
             }
 
-            public MissileInfo GetMissileCloseTo(Vector3D location, bool delete)
+            public MissileInfo GetMissileCloseTo(Vector3D location, MissileType type, bool delete)
             {
                 MissileInfo tempInfo = default(MissileInfo);
 
                 foreach (var info in missileList)
                 {
-                    tempInfo = (Vector3D.DistanceSquared(info.location, location) < Vector3D.DistanceSquared(tempInfo.location, location)) ? info : tempInfo;
+                    tempInfo = (Vector3D.DistanceSquared(info.location, location) < Vector3D.DistanceSquared(tempInfo.location, location)) && (type & info.missileType)!=0 ? info : tempInfo;
                 }
 
                 if (delete && tempInfo != default(MissileInfo))
@@ -100,13 +100,13 @@ namespace IngameScript
                 return tempInfo;
             }
 
-            public MissileInfo GetMissileCloseToAndInDirection(Vector3D location, Vector3D direction, double range, double dotRange, bool delete)
+            public MissileInfo GetMissileCloseToAndInDirection(Vector3D location, Vector3D direction, MissileType type, double range, double dotRange, bool delete)
             {
                 MissileInfo tempInfo = default(MissileInfo);
 
                 foreach (var info in missileList)
                 {
-                    if (((info.direction.Dot(direction) < dotRange) && Vector3D.DistanceSquared(location, info.location) < (range * range)))
+                    if (((info.direction.Dot(direction) < dotRange) && Vector3D.DistanceSquared(location, info.location) < (range * range)) && (type & info.missileType) != 0)
                     {
                         tempInfo = info;
                     }
