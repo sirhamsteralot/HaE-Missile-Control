@@ -71,6 +71,27 @@ namespace IngameScript
             EveryTick();
         }
 
+        void EveryTick()
+        {
+            longRangeDetection?.DoDetect();
+            flightControl?.Main();
+        }
+
+        /*==========| Event callbacks |==========*/
+        void OnTargetDetected(MyDetectedEntityInfo target, int ticksFromLastFind)
+        {
+            Echo($"Target detected\n@{target.Position}");
+
+            if (targetGuidance)
+            {
+                var desiredAccel = guidance.CalculateAccel(target, ticksFromLastFind);
+
+                Echo($"desiredAccel:\n{desiredAccel}");
+                flightControl.DirectControl(desiredAccel);
+            }
+        }
+
+        /*=========| Helper Functions |=========*/
         bool ParseCommands(string command)
         {
             switch (command)
@@ -97,27 +118,6 @@ namespace IngameScript
             }
         }
 
-        void EveryTick()
-        {
-            longRangeDetection?.DoDetect();
-            flightControl?.Main();
-        }
-
-        /*==========| Event callbacks |==========*/
-        void OnTargetDetected(MyDetectedEntityInfo target, int ticksFromLastFind)
-        {
-            Echo($"Target detected\n@{target.Position}");
-
-            if (targetGuidance)
-            {
-                var desiredAccel = guidance.CalculateAccel(target, ticksFromLastFind);
-
-                Echo($"desiredAccel:\n{desiredAccel}");
-                flightControl.DirectControl(desiredAccel);
-            }
-        }
-
-        /*=========| Helper Functions |=========*/
         bool NewLongRangeDetection()
         {
             if (!mainCam.CanScan(MAXCASTDIST))

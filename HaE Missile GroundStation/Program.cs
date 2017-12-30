@@ -50,9 +50,19 @@ namespace IngameScript
             }
         }
 
+
+
+        /*==========| Event callbacks |==========*/
+        void OnMissileAdded(MissileManagement.MissileInfo info)
+        {
+            Echo($"Missile with ID {info.id} added.");
+        }
+
+        /*=========| Helper Functions |=========*/
+
         bool ParseCommands(string command)
         {
-            switch(command)
+            switch (command)
             {
                 case "RefreshMissiles":
                     missileManagement.RefreshMissileList();
@@ -71,12 +81,6 @@ namespace IngameScript
                     missileManagement.ParseMissileEntry(messages);
                     break;
             }
-        }
-
-        /*==========| Event callbacks |==========*/
-        void OnMissileAdded(MissileManagement.MissileInfo info)
-        {
-            Echo($"Missile with ID {info.id} added.");
         }
 
         IEnumerator<bool> Initialize()
