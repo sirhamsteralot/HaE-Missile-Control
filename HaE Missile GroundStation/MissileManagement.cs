@@ -20,18 +20,102 @@ namespace IngameScript
     {
         public class MissileManagement
         {
-            private HashSet<MissileInfo> missileList;
+            public Action<MissileInfo> OnMissileAdded;
 
-            public MissileManagement()
+            private HashSet<MissileInfo> missileList;
+            private ACPWrapper antennaProtocol;
+            
+
+            public MissileManagement (ACPWrapper antennaProtocol)
             {
                 missileList = new HashSet<MissileInfo>();
+                this.antennaProtocol = antennaProtocol;
             }
 
-            public void AddMissileEntry(long id, Vector3D location, Vector3D pointingDirection, MissileType missileType)
+            public void RefreshMissileList()
+            {
+                missileList.Clear();
+
+                antennaProtocol.PrepareMSG("MissilePing", 0);
+            }
+
+            public bool ParseMissileEntry(string[] missileEntry)
+            {
+                if (missileEntry.Length == 5)
+                {
+                    long Id;
+                    if (!Int64.TryParse(missileEntry[1], out Id))
+                        return false;
+
+                    Vector3D location;
+                    if (!Vector3D.TryParse(missileEntry[2], out location))
+                        return false;
+
+                    Vector3D direction;
+                    if (!Vector3D.TryParse(missileEntry[3], out direction))
+                        return false;
+
+                    
+                    int backingNumber;
+                    if (!Int32.TryParse(missileEntry[4], out backingNumber))
+                        return false;
+                    MissileType type = (MissileType)backingNumber;
+
+                    if (AddMissileEntry(Id, location, direction, type))
+                        return true;
+
+                    return false;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            private bool AddMissileEntry(long id, Vector3D location, Vector3D pointingDirection, MissileType missileType)
             {
                 var info = new MissileInfo(id, location, pointingDirection, missileType);
 
-                missileList.Add(info);
+                if (missileList.Add(info))
+                {
+                    OnMissileAdded?.Invoke(info);
+                    return true;
+                }
+                    
+                return false;
+            }
+
+            public MissileInfo GetMissileCloseTo(Vector3D location, bool delete)
+            {
+                MissileInfo tempInfo = default(MissileInfo);
+
+                foreach (var info in missileList)
+                {
+                    tempInfo = (Vector3D.DistanceSquared(info.location, location) < Vector3D.DistanceSquared(tempInfo.location, location)) ? info : tempInfo;
+                }
+
+                if (delete && tempInfo != default(MissileInfo))
+                    missileList.Remove(tempInfo);
+
+                return tempInfo;
+            }
+
+            public MissileInfo GetMissileCloseToAndInDirection(Vector3D location, Vector3D direction, double range, double dotRange, bool delete)
+            {
+                MissileInfo tempInfo = default(MissileInfo);
+
+                foreach (var info in missileList)
+                {
+                    if (((info.direction.Dot(direction) < dotRange) && Vector3D.DistanceSquared(location, info.location) < (range * range)))
+                    {
+                        tempInfo = info;
+                    }
+                }
+
+                if (delete && tempInfo != default(MissileInfo))
+                    missileList.Remove(tempInfo);
+
+                return tempInfo;
             }
 
             public MissileInfo GetMissileEntry(long missileId, bool delete)

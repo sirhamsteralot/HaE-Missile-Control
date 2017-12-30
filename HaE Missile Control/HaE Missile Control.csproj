@@ -105,6 +105,7 @@
     <AdditionalFiles Include="MDK\MDK.options">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>
+    <Compile Include="MissileManagementClient.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectorProjection.cs" />
     <Compile Include="TargetGuidance.cs" />

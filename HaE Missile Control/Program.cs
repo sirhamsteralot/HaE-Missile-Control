@@ -20,6 +20,7 @@ namespace IngameScript
     {
         const string RCNAME = "RC";
         const string MAINCAM = "TargetingCamera";
+        const MissileManagementClient.MissileType missileType = MissileManagementClient.MissileType.SRInterceptor;
 
         const double MAXCASTDIST = 10000;
 
@@ -27,6 +28,7 @@ namespace IngameScript
         ACPWrapper antennaComms;
         FlightControl flightControl;
         TargetGuidance guidance;
+        MissileManagementClient clientSystem;
 
         List<IMyCameraBlock> cameras;
         List<IMyGyro> gyros;
@@ -54,28 +56,43 @@ namespace IngameScript
             else
                 return;
 
-            long senderId;
-            string[] messages = antennaComms.Main(args, out senderId);
-            if (messages != null)
+            //Parse regular commands
+            if (!ParseCommands(args))
             {
-                foreach (var message in messages)
+                //Parse Messages
+                long senderId;
+                string[] messages = antennaComms.Main(args, out senderId);
+                if (messages != null)
                 {
-                    ParseMessage(message);
+                    ParseMessages(messages, senderId);
                 }
             }
 
             EveryTick();
         }
 
-        void ParseMessage(string message)
+        bool ParseCommands(string command)
         {
-            switch (message)
+            switch (command)
             {
                 case "Target":
                     NewLongRangeDetection();
-                    break;
+                    return true;
                 case "Attack":
                     targetGuidance = true;
+                    return true;
+            }
+
+            return false;
+        }
+
+        void ParseMessages(string[] messages, long senderId)
+        {
+            // Parse message header
+            switch (messages[0])
+            {
+                case "MissilePing":
+                    clientSystem.ReturnMissileInfo(senderId);
                     break;
             }
         }
@@ -145,6 +162,8 @@ namespace IngameScript
 
             guidance = new TargetGuidance(rc);
             yield return true;
+
+            clientSystem = new MissileManagementClient(antennaComms, rc, Me.EntityId, missileType);
 
             Echo("Initialized!");
         }

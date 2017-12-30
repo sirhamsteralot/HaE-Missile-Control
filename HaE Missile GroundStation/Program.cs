@@ -19,6 +19,7 @@ namespace IngameScript
     partial class Program : MyGridProgram
     {
         ACPWrapper antennaComms;
+        MissileManagement missileManagement;
 
         IEnumerator<bool> initializer;
 
@@ -30,37 +31,61 @@ namespace IngameScript
 
         public void Main(string args, UpdateType uType)
         {
+            //Initialize
             if (!initializer.MoveNext())
                 initializer.Dispose();
             else
                 return;
 
-            long senderId;
-            string[] messages = antennaComms.Main(args, out senderId);
-            if (messages != null)
+            //Parse regular commands
+            if (!ParseCommands(args))
             {
-                foreach (var message in messages)
+                //Parse Messages
+                long senderId;
+                string[] messages = antennaComms.Main(args, out senderId);
+                if (messages != null)
                 {
-                    ParseMessage(message);
+                    ParseMessages(messages, senderId);
                 }
             }
-
-            if (args == "")
-                return;
-
-            string[] msg = { args };
-            if (antennaComms.PrepareMSG(msg, "HaE Missile Server"))
-                Echo("Added message to queue");
         }
 
-        void ParseMessage(string message)
+        bool ParseCommands(string command)
         {
-            Echo(message);
+            switch(command)
+            {
+                case "RefreshMissiles":
+                    missileManagement.RefreshMissileList();
+                    return true;
+            }
+
+            return false;
+        }
+
+        void ParseMessages(string[] messages, long senderId)
+        {
+            // Parse message header
+            switch (messages[0])
+            {
+                case "missileEntry":
+                    missileManagement.ParseMissileEntry(messages);
+                    break;
+            }
+        }
+
+        /*==========| Event callbacks |==========*/
+        void OnMissileAdded(MissileManagement.MissileInfo info)
+        {
+            Echo($"Missile with ID {info.id} added.");
         }
 
         IEnumerator<bool> Initialize()
         {
             antennaComms = new ACPWrapper(this);
+            yield return true;
+
+            missileManagement = new MissileManagement(antennaComms);
+            missileManagement.OnMissileAdded += OnMissileAdded;
             yield return true;
 
             Echo("Initialized!");
