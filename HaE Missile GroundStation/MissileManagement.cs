@@ -24,14 +24,16 @@ namespace IngameScript
 
             private HashSet<MissileInfo> missileList;
             private ACPWrapper antennaProtocol;
-            
 
+
+            /*=============| Initializer |=============*/
             public MissileManagement (ACPWrapper antennaProtocol)
             {
                 missileList = new HashSet<MissileInfo>();
                 this.antennaProtocol = antennaProtocol;
             }
 
+            /*==========| General Commands |==========*/
             public void RefreshMissileList()
             {
                 missileList.Clear();
@@ -84,7 +86,19 @@ namespace IngameScript
                     
                 return false;
             }
+            /*==========| Command  Manager |==========*/
 
+            public bool SendCommand(MissileInfo missile, string[] command)
+            {
+                return antennaProtocol.PrepareMSG(command, missile.id);
+            }
+
+            public bool SendCommand(MissileInfo missile, string command)
+            {
+                return antennaProtocol.PrepareMSG(command, missile.id);
+            }
+
+            /*===============| Getters |==============*/
             public MissileInfo GetMissileCloseTo(Vector3D location, MissileType type, bool delete)
             {
                 MissileInfo tempInfo = default(MissileInfo);
@@ -133,6 +147,7 @@ namespace IngameScript
                 return tempInfo;
             }
 
+            /*============| Other  Types |============*/
             public struct MissileInfo
             {
                 public MissileInfo (long id, Vector3D location, Vector3D direction, MissileType missileType)

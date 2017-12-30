@@ -67,6 +67,15 @@ namespace IngameScript
                 case "RefreshMissiles":
                     missileManagement.RefreshMissileList();
                     return true;
+                case "TargetMissile":
+                    MissileManagement.MissileInfo missile = missileManagement.GetMissileCloseTo(Me.GetPosition(), MissileManagement.MissileType.SRInterceptor, true);
+                    missileManagement.SendCommand(missile, "Target");
+                    return true;
+
+                case "FireMissile":
+                    MissileManagement.MissileInfo fire = missileManagement.GetMissileCloseTo(Me.GetPosition(), MissileManagement.MissileType.SRInterceptor, true);
+                    missileManagement.SendCommand(fire, "Attack");
+                    return true;
             }
 
             return false;

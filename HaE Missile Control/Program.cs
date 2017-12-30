@@ -115,6 +115,12 @@ namespace IngameScript
                 case "MissilePing":
                     clientSystem.ReturnMissileInfo(senderId);
                     break;
+                case "Target":
+                    NewLongRangeDetection();
+                    break;
+                case "Attack":
+                    targetGuidance = true;
+                    break;
             }
         }
 
