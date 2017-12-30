@@ -24,10 +24,19 @@ namespace IngameScript
             {
                 foreach (var thrust in thrusters)
                 {
-                    if (Vector3D.Dot(thrust.WorldMatrix.Backward, direction) > 0.9)
+                    if (Vector3D.Dot(thrust.WorldMatrix.Backward, direction) > 0.99)
                     {
                         thrust.ThrustOverridePercentage = (float)percent;
                     }
+                }
+            }
+
+            public static void SetThrustBasedDot(List<IMyThrust> thrusters, Vector3D direction)
+            {
+                foreach (var thrust in thrusters)
+                {
+                    double thrustpercentage = Vector3D.Dot(thrust.WorldMatrix.Backward, direction);
+                    thrust.ThrustOverridePercentage = (float)(thrustpercentage);
                 }
             }
 

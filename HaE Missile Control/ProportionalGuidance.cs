@@ -20,7 +20,7 @@ namespace IngameScript
     {
         public class ProportionalGuidance
         {
-            private const float N = 5f;
+            private const float N = 3f;
             private const float NT = 1f;
 
             int ticksFromLastFind = 1;
@@ -28,7 +28,7 @@ namespace IngameScript
             private float PGAIN { get { return N; } }
             private float TargetAccel { get {
                                                 float RelativeSpeedF = (float)Math.Abs(RelativeSpeedDelta.Length());
-                                                return (RelativeSpeedF > N) ? RelativeSpeedF * NT : 0;
+                                                return (RelativeSpeedF > N) ? RelativeSpeedF / ticksFromLastFind * NT : 0;
                                             } }
 
             private MyDetectedEntityInfo targetInfo;
@@ -62,22 +62,34 @@ namespace IngameScript
                 this.rc = rc;
             }
 
-            public Vector3D CalculateAPNAccel(MyDetectedEntityInfo info, int ticksFromLastFind)
+            public Vector3D CalculateAccel(MyDetectedEntityInfo info, int ticksFromLastFind)
             {
                 UpdateTargetInfo(info, ticksFromLastFind);
 
+                return PPN();
+            }
+
+            private Vector3D PPN()
+            {
                 double mRelativeVelocity = RelativeVelocityVec.Length();
 
-                // Vector3D accelerationNormal = (NewLos + LosDelta) * PGAIN * mRelativeVelocity * LOSRate + LosDelta * PGAIN * TargetAccel / 2;
+                Vector3D accelerationNormal;
+                accelerationNormal = PGAIN * RelativeVelocityVec.Cross(CalculateRotVec());      //PPN term
 
-                //Vector3D accelerationNormal = PGAIN * RelativeVelocityVec.Cross(CalculateRotVec());
+                accelerationNormal -= rc.GetNaturalGravity();                                   //Gravity term
 
-                Vector3D temp = MissileVelocityVec != Vector3D.Zero ? MissileVelocityVec : RangeVec;
-                Vector3D accelerationNormal = -PGAIN * mRelativeVelocity * Vector3D.Normalize(temp).Cross(CalculateRotVec());
+                return accelerationNormal;
+            }
 
-                //Vector3D accelerationNormal = -PGAIN * mRelativeVelocity * Vector3D.Normalize(RangeVec).Cross(CalculateRotVec());
+            private Vector3D APN()
+            {
+                double mRelativeVelocity = RelativeVelocityVec.Length();
+                Vector3D nRelativeVelocityVec = Vector3D.Normalize(RelativeVelocityVec);
 
-                //accelerationNormal -= accelerationNormal / (accelerationNormal.Length() * 2);
+                Vector3D accelerationNormal;
+                accelerationNormal = PGAIN * RelativeVelocityVec.Cross(CalculateRotVec());      //PPN term
+                accelerationNormal += nRelativeVelocityVec + PGAIN * TargetAccel / 2;            //APN term
+                accelerationNormal -= rc.GetNaturalGravity();                                   //Gravity term
 
                 return accelerationNormal;
             }
