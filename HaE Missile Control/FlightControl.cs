@@ -54,6 +54,11 @@ namespace IngameScript
                 accelerateTarget = direction;
             }
 
+            public void BoostForward()
+            {
+                ThrustUtils.SetThrust(thrusters, control.WorldMatrix.Forward, 10);
+            }
+
             public void Accelerate(Vector3D acceleration)
             {
                 accelerateTarget = Vector3D.ClampToSphere(control.GetShipVelocities().LinearVelocity + acceleration, speedLimit);

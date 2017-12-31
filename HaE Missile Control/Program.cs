@@ -133,8 +133,22 @@ namespace IngameScript
                 case "Target":
                     NewLongRangeDetection();
                     break;
+                case "TargetLoc":
+                    Vector3D location;
+                    if (Vector3D.TryParse(messages[1], out location))
+                        NewLongRangeDetection(location);
+                    break;
+                case "AttackLoc":
+                    Vector3D locationT;
+                    if (Vector3D.TryParse(messages[1], out locationT))
+                        NewLongRangeDetection(locationT);
+                    targetGuidance = true;
+                    break;
                 case "Attack":
                     targetGuidance = true;
+                    break;
+                case "LaunchOut":
+                    flightControl.BoostForward();
                     break;
             }
         }
@@ -148,9 +162,14 @@ namespace IngameScript
             if (target.IsEmpty())
                 return false;
 
-            longRangeDetection = new LongRangeDetection(target.Position, cameras, rc.GetPosition());
-            longRangeDetection.OnTargetFound += OnTargetDetected;
+            NewLongRangeDetection(target.Position);
             return true;
+        }
+
+        void NewLongRangeDetection(Vector3D position)
+        {
+            longRangeDetection = new LongRangeDetection(position, cameras, rc.GetPosition());
+            longRangeDetection.OnTargetFound += OnTargetDetected;
         }
 
         IEnumerator<bool> Initialize()

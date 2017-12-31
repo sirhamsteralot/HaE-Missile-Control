@@ -41,6 +41,7 @@ namespace IngameScript
 
                 targets = new Dictionary<long, MyDetectedEntityInfo>();
                 missileStaging = new List<IEnumerator<bool>>();
+                firedMissiles = new Dictionary<long, MissileManagement.MissileInfo>();
             }
 
             public void Main(UpdateType uType)
@@ -58,12 +59,12 @@ namespace IngameScript
 
             private void OnUpdate10()
             {
+                MoveNextState();
                 IssueMissileCommands();
             }
 
             private void OnUpdate100()
             {
-                MoveNextState();
             }
 
             private void IssueMissileCommands()
@@ -92,6 +93,8 @@ namespace IngameScript
             {
                 IEnumerator<bool> tempSM = MissileSM(missile, targetId);
                 tempSM.MoveNext();
+
+                missileStaging.Add(tempSM);
             }
 
             private IEnumerator<bool> MissileSM(MissileManagement.MissileInfo missile, long targetId)
@@ -102,7 +105,7 @@ namespace IngameScript
                 yield return true;
 
                 string[] command = {
-                    "TargetLoc",
+                    "AttackLoc",
                     targets[targetId].Position.ToString()
                 };
 

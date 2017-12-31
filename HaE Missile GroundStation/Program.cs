@@ -34,7 +34,7 @@ namespace IngameScript
             initializer = Initialize();
         }
 
-        public void Main(string args, UpdateType uType)
+        public void SubMain(string args, UpdateType uType)
         {
             //Initialize
             if (!initializer.MoveNext())
@@ -81,7 +81,7 @@ namespace IngameScript
         /*==========| Event callbacks |==========*/
         void OnTargetDetected(MyDetectedEntityInfo target)
         {
-
+            Echo("Target detected!");
         }
 
         void OnMissileAdded(MissileManagement.MissileInfo info)
@@ -113,6 +113,14 @@ namespace IngameScript
                 case "FireMissile":
                     MissileManagement.MissileInfo fire = missileManagement.GetMissileCloseTo(Me.GetPosition(), MissileManagement.MissileType.SRInterceptor, true);
                     missileManagement.SendCommand(fire, "Attack");
+                    return true;
+
+                case "ModeAutomatic":
+                    currentMode = CurrentSystemMode.Automatic;
+                    return true;
+
+                case "ModeManual":
+                    currentMode = CurrentSystemMode.Command;
                     return true;
             }
 
@@ -149,6 +157,33 @@ namespace IngameScript
             yield return true;
 
             Echo("Initialized!");
+        }
+
+        void Main(string argument, UpdateType uType)
+        { //By inflex
+            try
+            {
+                SubMain(argument, uType);
+            }
+            catch (Exception e)
+            {
+                var sb = new StringBuilder();
+
+                sb.AppendLine("Exception Message:");
+                sb.AppendLine($"   {e.Message}");
+                sb.AppendLine();
+
+                sb.AppendLine("Stack trace:");
+                sb.AppendLine(e.StackTrace);
+                sb.AppendLine();
+
+                var exceptionDump = sb.ToString();
+
+                Echo(exceptionDump);
+
+                //Optionally rethrow
+                throw;
+            }
         }
     }
 }
