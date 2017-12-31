@@ -24,7 +24,7 @@ namespace IngameScript
             private const float NT = 1f;
 
             int _ticksFromLastFind = 1;
-            int TicksFromLastFind { get { return (_ticksFromLastFind >= 1) ? TicksFromLastFind : 1; } }
+            int TicksFromLastFind { get { return (_ticksFromLastFind >= 1) ? _ticksFromLastFind : 1; } }
 
             private float PGAIN { get { return N; } }
             private float TargetAccel { get {
