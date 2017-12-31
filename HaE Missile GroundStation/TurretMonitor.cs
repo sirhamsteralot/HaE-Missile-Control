@@ -51,7 +51,8 @@ namespace IngameScript
                         loadSpreader.Dispose();
                         loadSpreader = LoadSpreaderScan();
                     }
-                } else
+                }
+                else
                 {
                     loadSpreader = LoadSpreaderScan();
                 }

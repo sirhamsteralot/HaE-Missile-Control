@@ -20,13 +20,17 @@ namespace IngameScript
     {
         ACPWrapper antennaComms;
         MissileManagement missileManagement;
+        MissileCoordination missileCoordination;
         TurretMonitor turretMonitor;
+
+        enum CurrentSystemMode { Command, Automatic}
+        CurrentSystemMode currentMode = CurrentSystemMode.Command;
 
         IEnumerator<bool> initializer;
 
         public Program()
         {
-            Runtime.UpdateFrequency = UpdateFrequency.Update1 | UpdateFrequency.Update10 | UpdateFrequency.Update100;
+            Runtime.UpdateFrequency = UpdateFrequency.Update1 | UpdateFrequency.Update10 | UpdateFrequency.Update100; 
             initializer = Initialize();
         }
 
@@ -50,17 +54,17 @@ namespace IngameScript
                 }
             }
 
-            if ((uType & UpdateType.Update1) != 0)
-                EveryTick();
+
+            if (currentMode == CurrentSystemMode.Automatic)
+            {
+                turretMonitor.SlowScan();
+                missileCoordination.Main(uType);
+            }
+            
             if ((uType & UpdateType.Update10) != 0)
                 EveryTenTick();
             if ((uType & UpdateType.Update100) != 0)
                 EveryHundredTick();
-        }
-
-        void EveryTick()
-        {
-            turretMonitor.SlowScan();
         }
 
         void EveryTenTick()
@@ -70,9 +74,8 @@ namespace IngameScript
 
         void EveryHundredTick()
         {
-
+            
         }
-
 
 
         /*==========| Event callbacks |==========*/
@@ -84,13 +87,13 @@ namespace IngameScript
         void OnMissileAdded(MissileManagement.MissileInfo info)
         {
             Echo($"Missile with ID {info.id} added.");
-            Me.CustomData = missileManagement.MissileCount.ToString();
+            Me.CustomData = missileManagement.TotalMissileCount.ToString();
         }
 
         void OnMissileRemoved(MissileManagement.MissileInfo info)
         {
             Echo($"Missile with ID {info.id} removed.");
-            Me.CustomData = missileManagement.MissileCount.ToString();
+            Me.CustomData = missileManagement.TotalMissileCount.ToString();
         }
 
         /*=========| Helper Functions |=========*/
@@ -137,8 +140,13 @@ namespace IngameScript
             missileManagement.OnMissileRemoved += OnMissileRemoved;
             yield return true;
 
+            missileCoordination = new MissileCoordination(missileManagement, Me, antennaComms);
+            yield return true;
+
             turretMonitor = new TurretMonitor(this);
             turretMonitor.OnTargetDetected += OnTargetDetected;
+            turretMonitor.OnTargetDetected += missileCoordination.OnTargetDetected;
+            yield return true;
 
             Echo("Initialized!");
         }

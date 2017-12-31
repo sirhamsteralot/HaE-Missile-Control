@@ -20,7 +20,12 @@ namespace IngameScript
     {
         public class MissileManagement
         {
-            public int MissileCount { get { return missileList.Count; } }
+            public int TotalMissileCount { get { return missileList.Count; } }
+
+            public int SRIMissileCount { get { return CountMissilesOfType(MissileType.SRInterceptor); } }
+            public int MRIMissileCount { get { return CountMissilesOfType(MissileType.MRInterceptor); } }
+            public int LRIMissileCount { get { return CountMissilesOfType(MissileType.LRInterceptor); } }
+            public int ICBMMissileCount { get { return CountMissilesOfType(MissileType.ICBM); } }
 
             public Action<MissileInfo> OnMissileAdded;
             public Action<MissileInfo> OnMissileRemoved;
@@ -77,6 +82,20 @@ namespace IngameScript
                 }
             }
 
+            public void RemoveMissile(MissileInfo missile)
+            {
+                if (missile != default(MissileInfo))
+                {
+                    missileList.Remove(missile);
+                    OnMissileRemoved?.Invoke(missile);
+                }
+            }
+
+            private int CountMissilesOfType(MissileType missileType)
+            {
+                return missileList.Count(x => (x.missileType & missileType) != 0);
+            }
+
             private bool AddMissileEntry(long id, Vector3D location, Vector3D pointingDirection, MissileType missileType)
             {
                 var info = new MissileInfo(id, location, pointingDirection, missileType);
@@ -111,11 +130,8 @@ namespace IngameScript
                     tempInfo = (Vector3D.DistanceSquared(info.location, location) < Vector3D.DistanceSquared(tempInfo.location, location)) && (type & info.missileType)!=0 ? info : tempInfo;
                 }
 
-                if (delete && tempInfo != default(MissileInfo))
-                {
-                    missileList.Remove(tempInfo);
-                    OnMissileRemoved?.Invoke(tempInfo);
-                }
+                if (delete)
+                    RemoveMissile(tempInfo);
 
                 return tempInfo;
             }
@@ -126,17 +142,14 @@ namespace IngameScript
 
                 foreach (var info in missileList)
                 {
-                    if (((info.direction.Dot(direction) < dotRange) && Vector3D.DistanceSquared(location, info.location) < (range * range)) && (type & info.missileType) != 0)
+                    if (((info.direction.Dot(direction) > dotRange) && Vector3D.DistanceSquared(location, info.location) < (range * range)) && (type & info.missileType) != 0)
                     {
                         tempInfo = info;
                     }
                 }
 
-                if (delete && tempInfo != default(MissileInfo))
-                {
-                    missileList.Remove(tempInfo);
-                    OnMissileRemoved?.Invoke(tempInfo);
-                }
+                if (delete)
+                    RemoveMissile(tempInfo);
 
                 return tempInfo;
             }
@@ -150,11 +163,8 @@ namespace IngameScript
                     tempInfo = (info.id == missileId) ? info : default(MissileInfo);
                 }
 
-                if (delete && tempInfo != default(MissileInfo))
-                {
-                    missileList.Remove(tempInfo);
-                    OnMissileRemoved?.Invoke(tempInfo);
-                }
+                if (delete)
+                    RemoveMissile(tempInfo);
 
                 return tempInfo;
             }
