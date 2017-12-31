@@ -20,12 +20,13 @@ namespace IngameScript
     {
         ACPWrapper antennaComms;
         MissileManagement missileManagement;
+        TurretMonitor turretMonitor;
 
         IEnumerator<bool> initializer;
 
         public Program()
         {
-            Runtime.UpdateFrequency = UpdateFrequency.Update1;
+            Runtime.UpdateFrequency = UpdateFrequency.Update1 | UpdateFrequency.Update10 | UpdateFrequency.Update100;
             initializer = Initialize();
         }
 
@@ -48,11 +49,38 @@ namespace IngameScript
                     ParseMessages(messages, senderId);
                 }
             }
+
+            if ((uType & UpdateType.Update1) != 0)
+                EveryTick();
+            if ((uType & UpdateType.Update10) != 0)
+                EveryTenTick();
+            if ((uType & UpdateType.Update100) != 0)
+                EveryHundredTick();
+        }
+
+        void EveryTick()
+        {
+            turretMonitor.SlowScan();
+        }
+
+        void EveryTenTick()
+        {
+
+        }
+
+        void EveryHundredTick()
+        {
+
         }
 
 
 
         /*==========| Event callbacks |==========*/
+        void OnTargetDetected(MyDetectedEntityInfo target)
+        {
+
+        }
+
         void OnMissileAdded(MissileManagement.MissileInfo info)
         {
             Echo($"Missile with ID {info.id} added.");
@@ -108,6 +136,9 @@ namespace IngameScript
             missileManagement.OnMissileAdded += OnMissileAdded;
             missileManagement.OnMissileRemoved += OnMissileRemoved;
             yield return true;
+
+            turretMonitor = new TurretMonitor(this);
+            turretMonitor.OnTargetDetected += OnTargetDetected;
 
             Echo("Initialized!");
         }

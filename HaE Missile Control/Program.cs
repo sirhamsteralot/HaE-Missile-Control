@@ -45,7 +45,7 @@ namespace IngameScript
 
         public Program()
         {
-            Runtime.UpdateFrequency = UpdateFrequency.Update1;
+            Runtime.UpdateFrequency = UpdateFrequency.Update1 | UpdateFrequency.Update10 | UpdateFrequency.Update100;
             initializer = Initialize();
         }
 
@@ -68,13 +68,28 @@ namespace IngameScript
                 }
             }
 
-            EveryTick();
+            if ((uType & UpdateType.Update1) != 0)
+                EveryTick();
+            if ((uType & UpdateType.Update10) != 0)
+                EveryTenTick();
+            if ((uType & UpdateType.Update100) != 0)
+                EveryHundredTick();
         }
 
         void EveryTick()
         {
             longRangeDetection?.DoDetect();
             flightControl?.Main();
+        }
+
+        void EveryTenTick()
+        {
+
+        }
+
+        void EveryHundredTick()
+        {
+
         }
 
         /*==========| Event callbacks |==========*/
