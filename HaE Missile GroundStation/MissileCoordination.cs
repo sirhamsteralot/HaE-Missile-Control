@@ -29,6 +29,7 @@ namespace IngameScript
             private ACPWrapper antennas;
 
             private Dictionary<long, MyDetectedEntityInfo> targets;
+            private Dictionary<long, MyDetectedEntityInfo> firedAt;
             private Dictionary<long, MissileManagement.MissileInfo> firedMissiles;
 
             private List<IEnumerator<bool>> missileStaging;
@@ -42,6 +43,7 @@ namespace IngameScript
                 targets = new Dictionary<long, MyDetectedEntityInfo>();
                 missileStaging = new List<IEnumerator<bool>>();
                 firedMissiles = new Dictionary<long, MissileManagement.MissileInfo>();
+                firedAt = new Dictionary<long, MyDetectedEntityInfo>();
             }
 
             public void Main(UpdateType uType)
@@ -71,6 +73,9 @@ namespace IngameScript
             {
                 foreach (var targetPair in targets)
                 {
+                    if (firedAt.ContainsKey(targetPair.Key))
+                        return;
+
                     MyDetectedEntityInfo target = targetPair.Value;
                     Vector3D targetDirection = target.Position - reference.GetPosition();
                     double distance = targetDirection.Length();
@@ -92,6 +97,7 @@ namespace IngameScript
             private void LaunchNewMissile(MissileManagement.MissileInfo missile, long targetId)
             {
                 IEnumerator<bool> tempSM = MissileSM(missile, targetId);
+                firedAt[targetId] = targets[targetId];
                 tempSM.MoveNext();
 
                 missileStaging.Add(tempSM);
@@ -130,6 +136,8 @@ namespace IngameScript
             public void OnTargetDetected(MyDetectedEntityInfo target)
             {
                 if (target.IsEmpty())
+                    return;
+                if (firedAt.ContainsKey(target.EntityId))
                     return;
 
                 targets[target.EntityId] = target;

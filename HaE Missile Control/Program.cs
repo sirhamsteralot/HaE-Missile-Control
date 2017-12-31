@@ -39,8 +39,10 @@ namespace IngameScript
         IEnumerator<bool> initializer;
         IEnumerator<bool> stateMachine;
 
+        //Messages
+        string[] messages;
+        long senderId;
 
-        bool goToOrig = false;
         bool targetGuidance = false;
 
         public Program()
@@ -56,17 +58,20 @@ namespace IngameScript
             else
                 return;
 
-            //Parse regular commands
+            //Parse messages
+            if (messages != null)
+            {
+                ParseMessages(messages, senderId);
+            }
+
+            //Parse commands
             if (!ParseCommands(args))
             {
-                //Parse Messages
-                long senderId;
-                string[] messages = antennaComms.Main(args, out senderId);
-                if (messages != null)
-                {
-                    ParseMessages(messages, senderId);
-                }
+                //Get Messages
+                messages = antennaComms.Main(args, out senderId);
             }
+
+
 
             if ((uType & UpdateType.Update1) != 0)
                 EveryTick();
