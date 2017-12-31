@@ -57,10 +57,11 @@ namespace IngameScript
 
             if (currentMode == CurrentSystemMode.Automatic)
             {
-                turretMonitor.SlowScan();
                 missileCoordination.Main(uType);
+                turretMonitor.SlowScan();
+                //turretMonitor.Scan();
             }
-            
+
             if ((uType & UpdateType.Update10) != 0)
                 EveryTenTick();
             if ((uType & UpdateType.Update100) != 0)

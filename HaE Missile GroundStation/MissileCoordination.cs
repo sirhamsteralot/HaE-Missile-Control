@@ -53,8 +53,6 @@ namespace IngameScript
                 else if (targets.Count > management.SRIMissileCount)
                     OnSystemOverwhelmed?.Invoke();
 
-                if ((uType & UpdateType.Update100) != 0)
-                    OnUpdate100();
                 if ((uType & UpdateType.Update10) != 0)
                     OnUpdate10();
             }
@@ -62,11 +60,6 @@ namespace IngameScript
             private void OnUpdate10()
             {
                 MoveNextState();
-                IssueMissileCommands();
-            }
-
-            private void OnUpdate100()
-            {
             }
 
             private void IssueMissileCommands()
@@ -141,6 +134,8 @@ namespace IngameScript
                     return;
 
                 targets[target.EntityId] = target;
+
+                IssueMissileCommands();
             }
         }
     }

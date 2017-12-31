@@ -77,7 +77,6 @@ namespace IngameScript
                 Vector3D accelerationNormal;
                 accelerationNormal = PGAIN * RelativeVelocityVec.Cross(CalculateRotVec());      //PPN term
                 accelerationNormal += NewLos;                                                   //LosBias term
-                accelerationNormal -= rc.GetNaturalGravity();                                   //Gravity term
 
                 return accelerationNormal;
             }
@@ -91,7 +90,6 @@ namespace IngameScript
                 accelerationNormal = PGAIN * RelativeVelocityVec.Cross(CalculateRotVec());      //PPN term
                 accelerationNormal += PGAIN * TargetAccel / 2;                                  //APN term
                 accelerationNormal += NewLos;                                                   //LosBias term
-                accelerationNormal -= rc.GetNaturalGravity();                                   //Gravity term
 
                 return accelerationNormal;
             }
