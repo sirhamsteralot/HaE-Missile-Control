@@ -101,10 +101,11 @@ namespace IngameScript
         void OnTargetDetected(MyDetectedEntityInfo target, int ticksFromLastFind)
         {
             Echo($"Target detected\n@{target.Position}");
-
+            Echo($"CurrentInstructionCount: {Runtime.CurrentInstructionCount}");
             if (targetGuidance)
             {
                 var desiredAccel = guidance.CalculateAccel(target, ticksFromLastFind);
+                Echo($"CurrentInstructionCount: {Runtime.CurrentInstructionCount}");
 
                 Echo($"desiredAccel:\n{desiredAccel}");
                 flightControl.DirectControl(desiredAccel);
