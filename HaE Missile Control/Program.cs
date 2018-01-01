@@ -154,7 +154,7 @@ namespace IngameScript
                     targetGuidance = true;
                     break;
                 case "LaunchOut":
-                    flightControl.BoostForward();
+                    flightControl.BoostForward(1);
                     break;
             }
         }

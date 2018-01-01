@@ -45,6 +45,7 @@ namespace IngameScript
 
 
                 GyroUtils.PointInDirection(gyros, control, accelerateTarget, 2);
+                BoostForward(0.25f);
                 ThrustUtils.SetThrustBasedDot(thrusters, accelerateTarget, 4);
             }
 
@@ -54,9 +55,9 @@ namespace IngameScript
                 accelerateTarget = direction;
             }
 
-            public void BoostForward()
+            public void BoostForward(float amount)
             {
-                ThrustUtils.SetThrust(thrusters, control.WorldMatrix.Forward, 100);
+                ThrustUtils.SetThrust(thrusters, control.WorldMatrix.Forward, amount);
             }
 
             public void Accelerate(Vector3D acceleration)

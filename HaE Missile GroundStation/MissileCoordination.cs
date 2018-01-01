@@ -87,6 +87,7 @@ namespace IngameScript
                     }
 
                     LaunchNewMissile(missile, targetPair.Key);
+                    break;
                 }
             }
 
