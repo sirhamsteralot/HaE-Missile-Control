@@ -20,7 +20,7 @@ namespace IngameScript
     {
         public class MissileCoordination
         {
-            private const int targetTimeOutSec = 15;
+            private int targetTimeOutSec;
 
             public Action OnSystemOverwhelmed;
             public Action<MissileManagement.MissileInfo, MyDetectedEntityInfo> OnTargetFiredAt;
@@ -36,11 +36,15 @@ namespace IngameScript
 
             private List<IEnumerator<bool>> missileStaging;
 
-            public MissileCoordination(MissileManagement management, IMyTerminalBlock rc, ACPWrapper antennas)
+            private TargetFilter tFilter;
+
+            public MissileCoordination(MissileManagement management, IMyTerminalBlock rc, ACPWrapper antennas, TargetFilter tFilter, int targetTimeOutSec = 15)
             {
                 this.management = management;
                 this.reference = rc;
                 this.antennas = antennas;
+                this.targetTimeOutSec = targetTimeOutSec;
+                this.tFilter = tFilter;
 
                 targets = new Dictionary<long, MyDetectedEntityInfo>();
                 missileStaging = new List<IEnumerator<bool>>();
@@ -107,7 +111,7 @@ namespace IngameScript
                 management.RemoveMissile(missile);
                 yield return true;
 
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 5; i++)         //Wait 5 ticks to allow missile to get out of tube
                     yield return true;
 
                 var predictedPos = targets[targetId].Position + targets[targetId].Velocity * 0.17f;
@@ -151,17 +155,49 @@ namespace IngameScript
                 }
             }
 
+            private bool CheckTargetOnFilter(MyDetectedEntityInfo target)
+            {
+                double targetSizeSQ = target.BoundingBox.Size.LengthSquared();
+                double distanceSQ = Vector3D.DistanceSquared(reference.GetPosition(), target.Position);
+                MyDetectedEntityType type = target.Type;
+
+                if (targetSizeSQ < tFilter.minSize * tFilter.minSize)
+                    return false;
+                if (distanceSQ < tFilter.minDistance * tFilter.minDistance)
+                    return false;
+                if (!tFilter.allowedType.Contains(type))
+                    return false;
+                return true;
+            }
+
             /*==========| Event callbacks |==========*/
             public void OnTargetDetected(MyDetectedEntityInfo target)
             {
                 if (target.IsEmpty())
                     return;
-                //if (firedAt.ContainsKey(target.EntityId))
-                    //return;
+
+                if (!CheckTargetOnFilter(target))
+                    return;
 
                 targets[target.EntityId] = target;
 
                 IssueMissileCommands();
+            }
+
+            /*==========| structsAndStuff |==========*/
+
+            public struct TargetFilter
+            {
+                public double minSize;
+                public double minDistance;
+                public MyDetectedEntityType[] allowedType;
+
+                public TargetFilter(double minSize, double minDistance, MyDetectedEntityType[] allowedType)
+                {
+                    this.minSize = minSize;
+                    this.minDistance = minDistance;
+                    this.allowedType = allowedType;
+                }
             }
         }
     }

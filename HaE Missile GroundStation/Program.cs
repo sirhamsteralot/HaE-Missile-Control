@@ -148,7 +148,10 @@ namespace IngameScript
             missileManagement.OnMissileRemoved += OnMissileRemoved;
             yield return true;
 
-            missileCoordination = new MissileCoordination(missileManagement, Me, antennaComms);
+            MissileCoordination.TargetFilter filter = new MissileCoordination.TargetFilter(5, 1, 
+                new MyDetectedEntityType[] { MyDetectedEntityType.LargeGrid, MyDetectedEntityType.SmallGrid});
+
+            missileCoordination = new MissileCoordination(missileManagement, Me, antennaComms, filter);
             yield return true;
 
             turretMonitor = new TurretMonitor(this);

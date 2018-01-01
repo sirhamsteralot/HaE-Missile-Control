@@ -29,6 +29,7 @@ namespace IngameScript
         FlightControl flightControl;
         TargetGuidance guidance;
         MissileManagementClient clientSystem;
+        TurretMonitor turretMonitor;
 
         List<IMyCameraBlock> cameras;
         List<IMyGyro> gyros;
@@ -44,6 +45,7 @@ namespace IngameScript
         long senderId;
 
         bool targetGuidance = false;
+        bool useTurretLockon = false;
 
         public Program()
         {
@@ -156,6 +158,9 @@ namespace IngameScript
                 case "LaunchOut":
                     flightControl.BoostForward(1);
                     break;
+                case "UseTurretLockon":
+                    useTurretLockon = true;
+                    break;
             }
         }
 
@@ -210,6 +215,11 @@ namespace IngameScript
             yield return true;
 
             clientSystem = new MissileManagementClient(antennaComms, rc, Me.EntityId, missileType);
+            yield return true;
+
+            turretMonitor = new TurretMonitor(this);
+            turretMonitor.OnTargetDetected += OnTargetDetected;
+            yield return true;
 
             Echo("Initialized!");
         }
