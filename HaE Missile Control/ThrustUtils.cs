@@ -31,6 +31,17 @@ namespace IngameScript
                 }
             }
 
+            public static void SetMinimumThrust(List<IMyThrust> thrusters, Vector3D direction, double percent)
+            {
+                foreach (var thrust in thrusters)
+                {
+                    if (Vector3D.Dot(thrust.WorldMatrix.Backward, direction) > 0.99)
+                    {
+                        thrust.ThrustOverridePercentage = percent > thrust.ThrustOverridePercentage? (float)percent : thrust.ThrustOverridePercentage;
+                    }
+                }
+            }
+
             public static void SetThrustBasedDot(List<IMyThrust> thrusters, Vector3D direction, double mulitplier = 1)
             {
                 foreach (var thrust in thrusters)

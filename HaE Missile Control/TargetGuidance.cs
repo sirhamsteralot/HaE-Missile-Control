@@ -57,7 +57,6 @@ namespace IngameScript
 
 
 
-
             public TargetGuidance(IMyShipController rc)
             {
                 this.rc = rc;
@@ -72,8 +71,6 @@ namespace IngameScript
 
             private Vector3D PPN()
             {
-                double mRelativeVelocity = RelativeVelocityVec.Length();
-
                 Vector3D accelerationNormal;
                 accelerationNormal = PGAIN * RelativeVelocityVec.Cross(CalculateRotVec());      //PPN term
                 accelerationNormal += NewLos;                                                   //LosBias term
@@ -81,10 +78,23 @@ namespace IngameScript
                 return accelerationNormal;
             }
 
+            private Vector3D TPN()
+            {
+                Vector3D nRangeVec = Vector3D.Normalize(RangeVec);
+                double mRelativeVelocity = RelativeVelocityVec.Length();
+                
+
+                Vector3D accelerationNormal;
+                accelerationNormal = -PGAIN * mRelativeVelocity * nRangeVec.Cross(CalculateRotVec());       //TPN term
+                accelerationNormal += NewLos;                                                               //LosBias term
+
+                return accelerationNormal;
+            }
+
             private Vector3D APN()
             {
-                double mRelativeVelocity = RelativeVelocityVec.Length();
-                Vector3D nRelativeVelocityVec = Vector3D.Normalize(RelativeVelocityVec);
+                Vector3D nRelativeVelocityVec = RelativeVelocityVec;
+                double mRelativeVelocity = nRelativeVelocityVec.Normalize();
 
                 Vector3D accelerationNormal;
                 accelerationNormal = PGAIN * RelativeVelocityVec.Cross(CalculateRotVec());      //PPN term
@@ -127,6 +137,8 @@ namespace IngameScript
             {
                 if (two == Vector3D.Zero)
                     return one;
+                if (one == Vector3D.Zero)
+                    return two;
 
                 return one - Project(one, two);
             }

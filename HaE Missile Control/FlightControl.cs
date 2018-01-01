@@ -45,8 +45,8 @@ namespace IngameScript
 
 
                 GyroUtils.PointInDirection(gyros, control, accelerateTarget, 2);
-                BoostForward(0.25f);
                 ThrustUtils.SetThrustBasedDot(thrusters, accelerateTarget, 4);
+                ThrustUtils.SetMinimumThrust(thrusters, control.WorldMatrix.Forward, 0.25);
             }
 
             public void DirectControl(Vector3D direction)
