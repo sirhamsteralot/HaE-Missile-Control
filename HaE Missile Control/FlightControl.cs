@@ -56,7 +56,7 @@ namespace IngameScript
 
             public void BoostForward()
             {
-                ThrustUtils.SetThrust(thrusters, control.WorldMatrix.Forward, 10);
+                ThrustUtils.SetThrust(thrusters, control.WorldMatrix.Forward, 100);
             }
 
             public void Accelerate(Vector3D acceleration)

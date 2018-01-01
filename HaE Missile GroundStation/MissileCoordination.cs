@@ -106,6 +106,9 @@ namespace IngameScript
                 management.RemoveMissile(missile);
                 yield return true;
 
+                for (int i = 0; i < 5; i++)
+                    yield return true;
+
                 var predictedPos = targets[targetId].Position + targets[targetId].Velocity * 0.17f;
 
                 string[] command = {
@@ -152,8 +155,8 @@ namespace IngameScript
             {
                 if (target.IsEmpty())
                     return;
-                if (firedAt.ContainsKey(target.EntityId))
-                    return;
+                //if (firedAt.ContainsKey(target.EntityId))
+                    //return;
 
                 targets[target.EntityId] = target;
 
