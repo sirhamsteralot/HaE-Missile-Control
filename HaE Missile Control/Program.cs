@@ -85,7 +85,13 @@ namespace IngameScript
 
         void EveryTick()
         {
-            longRangeDetection?.DoDetect();
+            if (useTurretLockon)
+            {
+                turretMonitor.SlowScan();
+            } else
+            {
+                longRangeDetection?.DoDetect();
+            }
             flightControl?.Main();
         }
 
