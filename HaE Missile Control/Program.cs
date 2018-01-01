@@ -85,9 +85,9 @@ namespace IngameScript
 
         void EveryTick()
         {
-            if (useTurretLockon)
+            if (turretMonitor != null && useTurretLockon && turretMonitor.Turretcount > 0)
             {
-                turretMonitor.SlowScan();
+                turretMonitor.Scan();
             } else
             {
                 longRangeDetection?.DoDetect();
@@ -109,11 +109,9 @@ namespace IngameScript
         void OnTargetDetected(MyDetectedEntityInfo target, int ticksFromLastFind)
         {
             Echo($"Target detected\n@{target.Position}");
-            Echo($"CurrentInstructionCount: {Runtime.CurrentInstructionCount}");
             if (targetGuidance)
             {
                 var desiredAccel = guidance.CalculateAccel(target, ticksFromLastFind);
-                Echo($"CurrentInstructionCount: {Runtime.CurrentInstructionCount}");
 
                 Echo($"desiredAccel:\n{desiredAccel}");
                 flightControl.DirectControl(desiredAccel);
@@ -131,6 +129,10 @@ namespace IngameScript
                 case "Attack":
                     targetGuidance = true;
                     return true;
+                case "TurretControll":
+                    useTurretLockon = true;
+                    targetGuidance = true;
+                    break;
             }
 
             return false;

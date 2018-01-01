@@ -82,7 +82,7 @@ namespace IngameScript
                     targetDirection.Normalize();
 
                     MissileManagement.MissileInfo missile;
-                    missile = management.GetMissileCloseToAndInDirection(reference.GetPosition(), targetDirection, MissileManagement.MissileType.SRInterceptor, distance / 4, 0, false);
+                    missile = management.GetMissileCloseToAndInDirection(reference.GetPosition(), targetDirection, MissileManagement.MissileType.SRInterceptor | MissileManagement.MissileType.MRInterceptor, distance / 4, 0, false);
 
                     if (missile == default(MissileManagement.MissileInfo))
                     {
@@ -122,6 +122,9 @@ namespace IngameScript
                 };
 
                 management.SendCommand(missile, command);
+
+                if ((missile.missileType & MissileManagement.MissileType.SRInterceptor) != 0)
+                    management.SendCommand(missile, "UseTurretLockon");
 
                 OnTargetFiredAt?.Invoke(missile, targets[targetId]);
             }

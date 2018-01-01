@@ -21,6 +21,7 @@ namespace IngameScript
         public class TurretMonitor
         {
             public Action<MyDetectedEntityInfo, int> OnTargetDetected;
+            public int Turretcount => turretList.Count;
 
             private List<IMyLargeTurretBase> turretList;
             private IEnumerator<bool> loadSpreader;
