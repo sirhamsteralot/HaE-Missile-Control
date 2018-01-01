@@ -74,14 +74,14 @@ namespace IngameScript
 
         void EveryHundredTick()
         {
-            
+            missileManagement.RefreshMissileList();
         }
 
 
         /*==========| Event callbacks |==========*/
         void OnTargetDetected(MyDetectedEntityInfo target)
         {
-            Echo("Target detected!");
+            Echo($"{target.Name} detected!");
         }
 
         void OnMissileAdded(MissileManagement.MissileInfo info)
@@ -148,7 +148,7 @@ namespace IngameScript
             missileManagement.OnMissileRemoved += OnMissileRemoved;
             yield return true;
 
-            MissileCoordination.TargetFilter filter = new MissileCoordination.TargetFilter(5, 1, 
+            MissileCoordination.TargetFilter filter = new MissileCoordination.TargetFilter(1, 
                 new MyDetectedEntityType[] { MyDetectedEntityType.LargeGrid, MyDetectedEntityType.SmallGrid});
 
             missileCoordination = new MissileCoordination(missileManagement, Me, antennaComms, filter);

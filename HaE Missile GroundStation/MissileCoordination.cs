@@ -164,8 +164,6 @@ namespace IngameScript
                 double distanceSQ = Vector3D.DistanceSquared(reference.GetPosition(), target.Position);
                 MyDetectedEntityType type = target.Type;
 
-                if (targetSizeSQ < tFilter.minSize * tFilter.minSize)
-                    return false;
                 if (distanceSQ < tFilter.minDistance * tFilter.minDistance)
                     return false;
                 if (!tFilter.allowedType.Contains(type))
@@ -191,13 +189,11 @@ namespace IngameScript
 
             public struct TargetFilter
             {
-                public double minSize;
                 public double minDistance;
                 public MyDetectedEntityType[] allowedType;
 
-                public TargetFilter(double minSize, double minDistance, MyDetectedEntityType[] allowedType)
+                public TargetFilter(double minDistance, MyDetectedEntityType[] allowedType)
                 {
-                    this.minSize = minSize;
                     this.minDistance = minDistance;
                     this.allowedType = allowedType;
                 }

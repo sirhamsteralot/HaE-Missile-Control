@@ -20,8 +20,8 @@ namespace IngameScript
     {
         public class TargetGuidance
         {
-            private const float N = 3f;
-            private const float NT = 1f;
+            private const float N = 4f;
+            private const float NT = 1.5f;
 
             int _ticksFromLastFind = 1;
             int TicksFromLastFind { get { return (_ticksFromLastFind >= 1) ? _ticksFromLastFind : 1; } }

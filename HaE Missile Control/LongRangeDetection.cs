@@ -21,7 +21,7 @@ namespace IngameScript
         public class LongRangeDetection
         {
             public double maximumDistance = 10000;
-            private MyRelationsBetweenPlayerAndBlock[] bad = { MyRelationsBetweenPlayerAndBlock.Enemies, MyRelationsBetweenPlayerAndBlock.Neutral };
+            private MyRelationsBetweenPlayerAndBlock[] bad = { MyRelationsBetweenPlayerAndBlock.Enemies, MyRelationsBetweenPlayerAndBlock.Neutral, MyRelationsBetweenPlayerAndBlock.NoOwnership };
             private int ticksTimeout = 480;
 
             public Action<MyDetectedEntityInfo, int> OnTargetFound;
@@ -112,7 +112,7 @@ namespace IngameScript
 
                 if (!tempTarget.IsEmpty())
                 {
-                    if (tempTarget.Relationship == bad[0] || tempTarget.Relationship == bad[1])
+                    if (IsTargetBad(tempTarget))
                     {
                         targetI = tempTarget;
                         OnTargetFound?.Invoke(targetI, ticksFromLastFind);
@@ -121,6 +121,15 @@ namespace IngameScript
                         return true;
                     }
                 }
+
+                return false;
+            }
+
+            private bool IsTargetBad(MyDetectedEntityInfo target)
+            {
+                foreach (var relationship in bad)
+                    if (relationship == target.Relationship)
+                        return true;
 
                 return false;
             }
