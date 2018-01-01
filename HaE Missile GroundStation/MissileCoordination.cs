@@ -20,6 +20,8 @@ namespace IngameScript
     {
         public class MissileCoordination
         {
+            private const int targetTimeOutSec = 15;
+
             public Action OnSystemOverwhelmed;
             public Action<MissileManagement.MissileInfo, MyDetectedEntityInfo> OnTargetFiredAt;
             public Action<MyDetectedEntityInfo> OnCantFireAtTarget;
@@ -29,7 +31,7 @@ namespace IngameScript
             private ACPWrapper antennas;
 
             private Dictionary<long, MyDetectedEntityInfo> targets;
-            private Dictionary<long, MyDetectedEntityInfo> firedAt;
+            private Dictionary<long, DateTime> firedAt;
             private Dictionary<long, MissileManagement.MissileInfo> firedMissiles;
 
             private List<IEnumerator<bool>> missileStaging;
@@ -43,7 +45,7 @@ namespace IngameScript
                 targets = new Dictionary<long, MyDetectedEntityInfo>();
                 missileStaging = new List<IEnumerator<bool>>();
                 firedMissiles = new Dictionary<long, MissileManagement.MissileInfo>();
-                firedAt = new Dictionary<long, MyDetectedEntityInfo>();
+                firedAt = new Dictionary<long, DateTime>();
             }
 
             public void Main(UpdateType uType)
@@ -60,6 +62,7 @@ namespace IngameScript
             private void OnUpdate10()
             {
                 MoveNextState();
+                CheckTimeoutExpired();
             }
 
             private void IssueMissileCommands()
@@ -90,7 +93,7 @@ namespace IngameScript
             private void LaunchNewMissile(MissileManagement.MissileInfo missile, long targetId)
             {
                 IEnumerator<bool> tempSM = MissileSM(missile, targetId);
-                firedAt[targetId] = targets[targetId];
+                firedAt[targetId] = DateTime.Now;
                 tempSM.MoveNext();
 
                 missileStaging.Add(tempSM);
@@ -103,9 +106,11 @@ namespace IngameScript
                 management.RemoveMissile(missile);
                 yield return true;
 
+                var predictedPos = targets[targetId].Position + targets[targetId].Velocity * 0.17f;
+
                 string[] command = {
                     "AttackLoc",
-                    targets[targetId].Position.ToString()
+                    predictedPos.ToString()
                 };
 
                 management.SendCommand(missile, command);
@@ -122,6 +127,23 @@ namespace IngameScript
                         missileStaging[i].Dispose();
                         missileStaging.RemoveAt(i);
                     }    
+                }
+            }
+
+            private void CheckTimeoutExpired()
+            {
+                List<long> deletKeys = new List<long>();
+
+                foreach(var temp in firedAt)
+                {
+                    if (temp.Value.AddSeconds(targetTimeOutSec) < DateTime.Now)
+                        deletKeys.Add(temp.Key);
+                }
+
+                foreach(var key in deletKeys)
+                {
+                    firedAt.Remove(key);
+                    targets.Remove(key);
                 }
             }
 

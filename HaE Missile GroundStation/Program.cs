@@ -59,7 +59,6 @@ namespace IngameScript
             {
                 missileCoordination.Main(uType);
                 turretMonitor.SlowScan();
-                //turretMonitor.Scan();
             }
 
             if ((uType & UpdateType.Update10) != 0)
