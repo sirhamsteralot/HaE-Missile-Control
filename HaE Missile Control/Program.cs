@@ -169,6 +169,10 @@ namespace IngameScript
                 case "UseTurretLockon":
                     useTurretLockon = true;
                     break;
+                case "FullTurretGuidance":
+                    useTurretLockon = true;
+                    targetGuidance = true;
+                    break;
             }
         }
 
