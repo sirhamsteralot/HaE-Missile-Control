@@ -67,6 +67,8 @@ namespace IngameScript
                 UpdateTargetInfo(info, ticksFromLastFind);
 
                 return APN();
+                //return PPN;
+                //return ExperimentalGuidance();
             }
 
             private Vector3D PPN()
@@ -78,15 +80,15 @@ namespace IngameScript
                 return accelerationNormal;
             }
 
-            private Vector3D TPN()
+            private Vector3D ExperimentalGuidance()
             {
                 Vector3D nRangeVec = Vector3D.Normalize(RangeVec);
+                Vector3D nMissileVelocity = Vector3D.Normalize(MissileVelocityVec);
                 double mRelativeVelocity = RelativeVelocityVec.Length();
                 
 
                 Vector3D accelerationNormal;
                 accelerationNormal = -PGAIN * mRelativeVelocity * nRangeVec.Cross(CalculateRotVec());       //TPN term
-                accelerationNormal += NewLos;                                                               //LosBias term
 
                 return accelerationNormal;
             }
