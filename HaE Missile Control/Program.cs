@@ -164,10 +164,15 @@ namespace IngameScript
                     targetGuidance = true;
                     break;
                 case "LaunchOut":
-                    flightControl.BoostForward(1);
+                    flightControl.BoostForward(100);
                     break;
                 case "UseTurretLockon":
                     useTurretLockon = true;
+                    break;
+                case "LaunchInDirection":
+                    Vector3D direction;
+                    if (Vector3D.TryParse(messages[1], out direction))
+                        flightControl.AccelerateInDirection(direction);
                     break;
                 case "FullTurretGuidance":
                     useTurretLockon = true;

@@ -74,7 +74,7 @@ namespace IngameScript
 
         void EveryHundredTick()
         {
-            missileManagement.RefreshMissileList();
+            //missileManagement.RefreshMissileList();
         }
 
 
@@ -122,6 +122,29 @@ namespace IngameScript
                 case "ModeManual":
                     currentMode = CurrentSystemMode.Command;
                     return true;
+
+                default:    //More complex stuff goes here
+                    if (command.StartsWith("LaunchInDirectionTurr|"))
+                    {
+                        string[] commandArgs = command.Split('|');
+
+                        try
+                        {
+                            Vector3D direction;
+                            if (Vector3D.TryParse(commandArgs[1], out direction))
+                            {
+                                missileCoordination.FireMissileInDirection(direction, true);
+
+                                Echo("Launched missile");
+                            }
+
+                        }
+                        catch (Exception e) { Echo("Failed to parse message"); }
+
+                        return true;
+                    }
+
+                    break;
             }
 
             return false;

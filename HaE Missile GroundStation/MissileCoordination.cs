@@ -95,6 +95,26 @@ namespace IngameScript
                 }
             }
 
+            public void FireMissileInDirection(Vector3D direction, bool activeTurretTracking)
+            {
+                MissileManagement.MissileInfo missile;
+                missile = management.GetMissileCloseToAndInDirection(reference.GetPosition(), direction, MissileManagement.MissileType.SRInterceptor | MissileManagement.MissileType.MRInterceptor, 1000 / 4, 0, false);
+
+                if (missile == default(MissileManagement.MissileInfo))
+                    reference.CustomData += "Hi";
+
+                string[] commands = {
+                    "LaunchInDirection",
+                    direction.ToString()
+                };
+                management.SendCommand(missile, commands);
+
+                firedMissiles[missile.id] = missile;
+                management.RemoveMissile(missile);
+
+                management.SendCommand(missile, "FullTurretGuidance");
+            }
+
             private void LaunchNewMissile(MissileManagement.MissileInfo missile, long targetId)
             {
                 IEnumerator<bool> tempSM = MissileSM(missile, targetId);

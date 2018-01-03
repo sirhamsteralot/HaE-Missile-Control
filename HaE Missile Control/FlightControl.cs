@@ -27,6 +27,8 @@ namespace IngameScript
             private IMyShipController control;
             private List<IMyGyro> gyros;
             private List<IMyThrust> thrusters;
+
+            bool accelerateInDirection = false;
             
 
             private Vector3D accelerateTarget;
@@ -43,10 +45,27 @@ namespace IngameScript
                 if (accelerateTarget == null || accelerateTarget == Vector3D.Zero || accelerateTarget == Vector3D.PositiveInfinity)
                     return;
 
-
                 GyroUtils.PointInDirection(gyros, control, accelerateTarget, 1);
                 ThrustUtils.SetThrustBasedDot(thrusters, accelerateTarget, 4);
                 //ThrustUtils.SetMinimumThrust(thrusters, control.WorldMatrix.Forward, 0.25);
+
+                if (accelerateInDirection && control.GetShipSpeed() >= 99.99)
+                {
+                    accelerateTarget = Vector3D.Zero;
+                    BoostForward(0);
+                    accelerateInDirection = false;
+                }
+            }
+
+            public void AccelerateInDirection(Vector3D direction)
+            {
+                direction.Normalize();
+                accelerateTarget = direction;
+
+                if (direction != Vector3D.Zero)
+                    accelerateInDirection = true;
+                else
+                    accelerateInDirection = false;
             }
 
             public void DirectControl(Vector3D direction)
