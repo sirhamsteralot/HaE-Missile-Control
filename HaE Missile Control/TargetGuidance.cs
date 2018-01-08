@@ -66,29 +66,38 @@ namespace IngameScript
             {
                 UpdateTargetInfo(info, ticksFromLastFind);
 
-                return APN();
-                //return PPN;
+                return HPN();
+                //return APN();
+                //return PPN();
                 //return ExperimentalGuidance();
             }
 
             private Vector3D PPN()
             {
-                Vector3D accelerationNormal;
-                accelerationNormal = PGAIN * RelativeVelocityVec.Cross(CalculateRotVec());      //PPN term
-                accelerationNormal += NewLos;                                                   //LosBias term
+                Vector3D accelerationNormal = PGAIN * RelativeVelocityVec.Cross(CalculateRotVec());      //PPN term
 
                 return accelerationNormal;
             }
 
             private Vector3D ExperimentalGuidance()
             {
-                Vector3D nRangeVec = Vector3D.Normalize(RangeVec);
-                Vector3D nMissileVelocity = Vector3D.Normalize(MissileVelocityVec);
-                double mRelativeVelocity = RelativeVelocityVec.Length();
-                
+                Vector3D nRelativeVelocityVec = RelativeVelocityVec;
+                double mRelativeVelocity = nRelativeVelocityVec.Normalize();
 
                 Vector3D accelerationNormal;
-                accelerationNormal = -PGAIN * mRelativeVelocity * nRangeVec.Cross(CalculateRotVec());       //TPN term
+                accelerationNormal = PGAIN * LosDelta;                                          //HPN term
+                accelerationNormal += NewLos;                                                   //LosBias term
+
+                return accelerationNormal;
+            }
+
+            private Vector3D HPN()
+            {
+                Vector3D accelerationNormal;
+                accelerationNormal = PGAIN * RelativeVelocityVec.Cross(CalculateRotVec());      //PPN term
+                accelerationNormal += PGAIN * TargetAccel / 2;                                  //APN term
+                accelerationNormal += PGAIN * LosDelta;                                         //HPN term
+                accelerationNormal += NewLos;                                                   //LosBias term
 
                 return accelerationNormal;
             }
@@ -109,7 +118,8 @@ namespace IngameScript
             private Vector3D CalculateRotVec()
             {
                 Vector3D RxV = Vector3D.Cross(RangeVec, RelativeVelocityVec);
-                Vector3D RdR = RangeVec * RangeVec;
+                //Vector3D RdR = RangeVec * RangeVec;
+                double RdR = RangeVec.LengthSquared();
 
                 return RxV / RdR;
             }

@@ -47,7 +47,6 @@ namespace IngameScript
 
                 GyroUtils.PointInDirection(gyros, control, accelerateTarget, 1);
                 ThrustUtils.SetThrustBasedDot(thrusters, accelerateTarget, 4);
-                //ThrustUtils.SetMinimumThrust(thrusters, control.WorldMatrix.Forward, 0.25);
 
                 if (accelerateInDirection && control.GetShipSpeed() >= 99.99)
                 {
