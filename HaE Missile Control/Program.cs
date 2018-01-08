@@ -24,6 +24,8 @@ namespace IngameScript
 
         const double MAXCASTDIST = 10000;
 
+        static Action<string> GlobalEcho;
+
         LongRangeDetection longRangeDetection;
         ACPWrapper antennaComms;
         FlightControl flightControl;
@@ -50,6 +52,7 @@ namespace IngameScript
         public Program()
         {
             Runtime.UpdateFrequency = UpdateFrequency.Update1 | UpdateFrequency.Update10 | UpdateFrequency.Update100;
+            GlobalEcho = Echo;
             initializer = Initialize();
         }
 

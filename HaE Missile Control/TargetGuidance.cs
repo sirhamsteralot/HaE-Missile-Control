@@ -23,6 +23,9 @@ namespace IngameScript
             private const float N = 3.5f;
             private const float NT = 0.5f;
 
+            private const float MAXN = 20f;
+            private const float MINN = 2f;
+
             int _ticksFromLastFind = 1;
             int TicksFromLastFind { get { return (_ticksFromLastFind >= 1) ? _ticksFromLastFind : 1; } }
 
@@ -93,11 +96,19 @@ namespace IngameScript
 
             private Vector3D HPN()
             {
+                double lambda = LOSRate;
+                double gamma = (PGAIN * LOSRate);
+                double IPNGain = (RelativeVelocityVec.Length() * PGAIN) / (MissileVelocityVec.Length() * Math.Cos(gamma - lambda));
+                IPNGain = MathHelperD.Clamp(IPNGain, MINN, MAXN);
+                IPNGain = (IPNGain != double.NaN) ? IPNGain : PGAIN;
+
+                GlobalEcho?.Invoke($"IPNGain: {IPNGain:#.###}");
+
                 Vector3D accelerationNormal;
-                accelerationNormal = PGAIN * RelativeVelocityVec.Cross(CalculateRotVec());      //PPN term
-                accelerationNormal += PGAIN * TargetAccel / 2;                                  //APN term
-                accelerationNormal += PGAIN * LosDelta;                                         //HPN term
-                accelerationNormal += NewLos;                                                   //LosBias term
+                accelerationNormal = IPNGain * RelativeVelocityVec.Cross(CalculateRotVec());        //PPN term
+                accelerationNormal += IPNGain * TargetAccel / 2;                                    //APN term
+                accelerationNormal += IPNGain * LosDelta;                                           //HPN term
+                accelerationNormal += NewLos;                                                       //LosBias term
 
                 return accelerationNormal;
             }
