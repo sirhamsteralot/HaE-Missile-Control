@@ -33,17 +33,21 @@ namespace IngameScript
                 p.GridTerminalSystem.GetBlocksOfType(turretList);
             }
 
-            public void Scan()
+            public MyDetectedEntityInfo? Scan()
             {
                 ticksFromlastFind++;
                 foreach (var turret in turretList)
                 {
                     if (turret.HasTarget)
                     {
-                        OnTargetDetected?.Invoke(turret.GetTargetedEntity(), ticksFromlastFind);
+                        var target = turret.GetTargetedEntity();
+                        OnTargetDetected?.Invoke(target, ticksFromlastFind);
                         ticksFromlastFind = 0;
+                        return target;
                     }
                 }
+
+                return null;
             }
 
             public void SlowScan()

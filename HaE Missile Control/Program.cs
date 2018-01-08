@@ -88,13 +88,7 @@ namespace IngameScript
 
         void EveryTick()
         {
-            if (turretMonitor != null && useTurretLockon && turretMonitor.Turretcount > 0)
-            {
-                turretMonitor.Scan();
-            } else
-            {
-                longRangeDetection?.DoDetect();
-            }
+            TargetingSystem();
             flightControl?.Main();
         }
 
@@ -106,6 +100,35 @@ namespace IngameScript
         void EveryHundredTick()
         {
 
+        }
+
+        void TargetingSystem()
+        {
+            MyDetectedEntityInfo? turretTarget = null;
+            double turretDist = 0;
+
+            if (turretMonitor != null && useTurretLockon && turretMonitor.Turretcount > 0)
+            {
+                turretTarget = turretMonitor.Scan();
+                if (turretTarget.HasValue)
+                    turretDist = Vector3D.DistanceSquared(rc.GetPosition(), turretTarget.Value.Position);
+            }
+            else
+            {
+                longRangeDetection?.DoDetect();
+            }
+
+            
+
+            if (useTurretLockon && turretDist > 750*750)
+            {
+                if (longRangeDetection == null && turretTarget.HasValue)
+                {
+                    NewLongRangeDetection(turretTarget.Value.Position);
+                }
+
+                longRangeDetection?.DoDetect();
+            }
         }
 
         /*==========| Event callbacks |==========*/
