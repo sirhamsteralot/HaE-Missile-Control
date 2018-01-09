@@ -24,7 +24,7 @@ namespace IngameScript
             private const float NT = 0.5f;
 
             private const float MAXN = 20f;
-            private const float MINN = 2f;
+            private const float MINN = -20f;
 
             int _ticksFromLastFind = 1;
             int TicksFromLastFind { get { return (_ticksFromLastFind >= 1) ? _ticksFromLastFind : 1; } }
@@ -98,11 +98,13 @@ namespace IngameScript
             {
                 double lambda = LOSRate;
                 double gamma = (PGAIN * LOSRate);
-                double IPNGain = (RelativeVelocityVec.Length() * PGAIN) / (MissileVelocityVec.Length() * Math.Cos(gamma - lambda));
+                float cos = MyMath.FastCos((float)gamma - (float)lambda);
+                double IPNGain = (RelativeVelocityVec.Length() * PGAIN) / (MissileVelocityVec.Length() * cos);
+
                 IPNGain = MathHelperD.Clamp(IPNGain, MINN, MAXN);
                 IPNGain = (IPNGain != double.NaN) ? IPNGain : PGAIN;
 
-                GlobalEcho?.Invoke($"IPNGain: {IPNGain:#.###}");
+                DebugEcho($"IPNGain: {IPNGain:#.###}");
 
                 Vector3D accelerationNormal;
                 accelerationNormal = IPNGain * RelativeVelocityVec.Cross(CalculateRotVec());        //PPN term

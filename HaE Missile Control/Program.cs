@@ -20,11 +20,12 @@ namespace IngameScript
     {
         const string RCNAME = "RC";
         const string MAINCAM = "TargetingCamera";
+        const bool DebugMode = true;
         const MissileManagementClient.MissileType missileType = MissileManagementClient.MissileType.SRInterceptor;
 
         const double MAXCASTDIST = 10000;
 
-        static Action<string> GlobalEcho;
+        private static readonly Queue<string> _messages = new Queue<string>();
 
         LongRangeDetection longRangeDetection;
         ACPWrapper antennaComms;
@@ -52,7 +53,6 @@ namespace IngameScript
         public Program()
         {
             Runtime.UpdateFrequency = UpdateFrequency.Update1 | UpdateFrequency.Update10 | UpdateFrequency.Update100;
-            GlobalEcho = Echo;
             initializer = Initialize();
         }
 
@@ -134,17 +134,29 @@ namespace IngameScript
         /*==========| Event callbacks |==========*/
         void OnTargetDetected(MyDetectedEntityInfo target, int ticksFromLastFind)
         {
-            Echo($"Target detected\n@{target.Position}");
+            DebugEcho($"Target detected\n@{target.Position}");
             if (targetGuidance)
             {
                 var desiredAccel = guidance.CalculateAccel(target, ticksFromLastFind);
 
-                Echo($"desiredAccel:\n{desiredAccel}");
+                DebugEcho($"desiredAccel:\n{desiredAccel}");
                 flightControl.DirectControl(desiredAccel);
             }
         }
 
         /*=========| Helper Functions |=========*/
+        void EchoDebugQueue()
+        {
+            while (_messages.Count > 0)
+                Echo(_messages.Dequeue());
+        }
+
+        public static void DebugEcho(string s)
+        {
+            if (DebugMode)
+                _messages.Enqueue(s);
+        }
+
         bool ParseCommands(string command)
         {
             switch (command)
@@ -264,33 +276,41 @@ namespace IngameScript
             turretMonitor.OnTargetDetected += OnTargetDetected;
             yield return true;
 
-            Echo("Initialized!");
+            DebugEcho("Initialized!");
         }
 
         void Main(string argument, UpdateType uType)
         { //By inflex
-            try
+            if (DebugMode)
+            {
+                try
+                {
+                    SubMain(argument, uType);
+                }
+                catch (Exception e)
+                {
+                    var sb = new StringBuilder();
+
+                    sb.AppendLine("Exception Message:");
+                    sb.AppendLine($"   {e.Message}");
+                    sb.AppendLine();
+
+                    sb.AppendLine("Stack trace:");
+                    sb.AppendLine(e.StackTrace);
+                    sb.AppendLine();
+
+                    var exceptionDump = sb.ToString();
+
+                    DebugEcho(exceptionDump);
+
+                    //Optionally rethrow
+                    throw;
+                }
+
+                EchoDebugQueue();
+            } else
             {
                 SubMain(argument, uType);
-            }
-            catch (Exception e)
-            {
-                var sb = new StringBuilder();
-
-                sb.AppendLine("Exception Message:");
-                sb.AppendLine($"   {e.Message}");
-                sb.AppendLine();
-
-                sb.AppendLine("Stack trace:");
-                sb.AppendLine(e.StackTrace);
-                sb.AppendLine();
-
-                var exceptionDump = sb.ToString();
-
-                Echo(exceptionDump);
-
-                //Optionally rethrow
-                throw;
             }
         }
     }
