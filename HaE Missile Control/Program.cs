@@ -116,12 +116,6 @@ namespace IngameScript
                 if (turretTarget.HasValue)
                     turretDist = Vector3D.DistanceSquared(rc.GetPosition(), turretTarget.Value.Position);
             }
-            else
-            {
-                longRangeDetection?.DoDetect();
-            }
-
-            
 
             if (useTurretLockon && turretDist > 750*750)
             {
@@ -129,9 +123,10 @@ namespace IngameScript
                 {
                     NewLongRangeDetection(turretTarget.Value.Position);
                 }
-
-                longRangeDetection?.DoDetect();
             }
+
+            if (turretTarget == null || turretDist > 750 * 750)
+                longRangeDetection?.DoDetect();
         }
 
         /*==========| Event callbacks |==========*/
