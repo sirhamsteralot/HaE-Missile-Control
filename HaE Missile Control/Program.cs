@@ -20,7 +20,9 @@ namespace IngameScript
     {
         const string RCNAME = "RC";
         const string MAINCAM = "TargetingCamera";
-        const bool DebugMode = true;
+
+        const bool DEBUGMODE = true;
+        const bool PROFILING = false;       //Will only work if debugmode is enabled
         const MissileManagementClient.MissileType missileType = MissileManagementClient.MissileType.SRInterceptor;
 
         const double MAXCASTDIST = 10000;
@@ -52,6 +54,7 @@ namespace IngameScript
 
         public Program()
         {
+            AddToLog("", true);
             Runtime.UpdateFrequency = UpdateFrequency.Update1 | UpdateFrequency.Update10 | UpdateFrequency.Update100;
             initializer = Initialize();
         }
@@ -145,18 +148,6 @@ namespace IngameScript
         }
 
         /*=========| Helper Functions |=========*/
-        void EchoDebugQueue()
-        {
-            while (_messages.Count > 0)
-                Echo(_messages.Dequeue());
-        }
-
-        public static void DebugEcho(string s)
-        {
-            if (DebugMode)
-                _messages.Enqueue(s);
-        }
-
         bool ParseCommands(string command)
         {
             switch (command)
@@ -279,9 +270,29 @@ namespace IngameScript
             DebugEcho("Initialized!");
         }
 
+        void EchoDebugQueue()
+        {
+            while (_messages.Count > 0)
+                Echo(_messages.Dequeue());
+        }
+
+        public static void DebugEcho(string s)
+        {
+            if (DEBUGMODE)
+                _messages.Enqueue(s);
+        }
+
+        public void AddToLog(string s, bool clear = false)
+        {
+            if (clear)
+                Me.CustomData = "";
+
+            Me.CustomData += s;
+        }
+
         void Main(string argument, UpdateType uType)
         { //By inflex
-            if (DebugMode)
+            if (DEBUGMODE)
             {
                 try
                 {
@@ -306,7 +317,11 @@ namespace IngameScript
                     //Optionally rethrow
                     throw;
                 }
-
+                if (PROFILING)
+                {
+                    DebugEcho($"Performance info:\nPrev Runtime: {Runtime.LastRunTimeMs}\n Current Instruction Count: {Runtime.CurrentInstructionCount}");
+                    AddToLog($"{Runtime.LastRunTimeMs};");
+                }
                 EchoDebugQueue();
             } else
             {
