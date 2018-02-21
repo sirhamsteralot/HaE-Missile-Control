@@ -90,10 +90,10 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="MDKUtilities">
-      <HintPath>C:\Users\SirHa\AppData\Local\Microsoft\VisualStudio\15.0_26aa628f\Extensions\bytmvows.xqa\MDKUtilities.dll</HintPath>
+      <HintPath>C:\Users\SirHa\AppData\Local\Microsoft\VisualStudio\15.0_26aa628f\Extensions\oyffjult.vss\MDKUtilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Analyzer Include="C:\Users\SirHa\AppData\Local\Microsoft\VisualStudio\15.0_26aa628f\Extensions\bytmvows.xqa\Analyzers\MDKAnalyzer.dll" />
+    <Analyzer Include="C:\Users\SirHa\AppData\Local\Microsoft\VisualStudio\15.0_26aa628f\Extensions\oyffjult.vss\Analyzers\MDKAnalyzer.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ACPWrapper.cs" />
