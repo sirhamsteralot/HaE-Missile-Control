@@ -60,14 +60,12 @@ namespace IngameScript
                 {
                     Teller = 0;
                     WhereInTheLoop++;
-                }
 
-                if (WhereInTheLoop >= frames.Length)
-                {
-                    WhereInTheLoop = 0;
-                }
+                    if (WhereInTheLoop >= frames.Length)
+                        WhereInTheLoop = 0;
 
-                P.Echo(TopMsg + "\n" + frames[WhereInTheLoop]);
+                    P.Echo(TopMsg + "\n" + frames[WhereInTheLoop]);
+                }
             }
         }
     }
