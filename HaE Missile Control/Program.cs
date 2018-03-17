@@ -227,26 +227,26 @@ namespace IngameScript
         IEnumerator<bool> Initialize()
         {
             cameras = new List<IMyCameraBlock>();
-            GridTerminalSystem.GetBlocksOfType(cameras);
+            GridTerminalSystem.GetBlocksOfType(cameras, x => x.CubeGrid == Me.CubeGrid);
             foreach (var cam in cameras)
                 cam.EnableRaycast = true;
             yield return true;
 
             gyros = new List<IMyGyro>();
-            GridTerminalSystem.GetBlocksOfType(gyros);
+            GridTerminalSystem.GetBlocksOfType(gyros, x => x.CubeGrid == Me.CubeGrid);
             yield return true;
 
-            antennaComms = new ACPWrapper(this);
+            antennaComms = new ACPWrapper(this, x => x.CubeGrid == Me.CubeGrid);
             yield return true;
 
             thrusters = new List<IMyThrust>();
-            GridTerminalSystem.GetBlocksOfType(thrusters);
+            GridTerminalSystem.GetBlocksOfType(thrusters, x => x.CubeGrid == Me.CubeGrid);
             yield return true;
 
-            rc = GridTerminalSystem.GetBlockWithName(RCNAME) as IMyRemoteControl;
+            rc = GetBlockWithNameOnGrid(RCNAME) as IMyRemoteControl;
             yield return true;
 
-            mainCam = GridTerminalSystem.GetBlockWithName(MAINCAM) as IMyCameraBlock;
+            mainCam = GetBlockWithNameOnGrid(MAINCAM) as IMyCameraBlock;
             yield return true;
 
             flightControl = new FlightControl(rc, gyros, thrusters);
@@ -263,6 +263,14 @@ namespace IngameScript
             yield return true;
 
             DebugEcho("Initialized!");
+        }
+
+        public IMyTerminalBlock GetBlockWithNameOnGrid(string name)
+        {
+            List<IMyTerminalBlock> blocks = new List<IMyTerminalBlock>();
+            GridTerminalSystem.SearchBlocksOfName(name, blocks, x => x.CubeGrid == Me.CubeGrid);
+
+            return (blocks[0]);
         }
 
         void EchoDebugQueue()

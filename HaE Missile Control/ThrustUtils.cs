@@ -26,7 +26,8 @@ namespace IngameScript
                 {
                     if (Vector3D.Dot(thrust.WorldMatrix.Backward, direction) > 0.99)
                     {
-                        thrust.Enabled = true;
+                        if (!thrust.Enabled)
+                            thrust.Enabled = true;
 
                         thrust.ThrustOverridePercentage = (float)percent;
                     }
@@ -39,7 +40,8 @@ namespace IngameScript
                 {
                     if (Vector3D.Dot(thrust.WorldMatrix.Backward, direction) > 0.99)
                     {
-                        thrust.Enabled = true;
+                        if (!thrust.Enabled)
+                            thrust.Enabled = true;
 
                         thrust.ThrustOverridePercentage = percent > thrust.ThrustOverridePercentage? (float)percent : thrust.ThrustOverridePercentage;
                     }
@@ -50,7 +52,8 @@ namespace IngameScript
             {
                 foreach (var thrust in thrusters)
                 {
-                    thrust.Enabled = true;
+                    if (!thrust.Enabled)
+                        thrust.Enabled = true;
 
                     double thrustpercentage = Vector3D.Dot(thrust.WorldMatrix.Backward, direction);
                     thrust.ThrustOverridePercentage = (float)(thrustpercentage * mulitplier);
@@ -63,7 +66,8 @@ namespace IngameScript
                 {
                     if (Vector3D.Dot(thrust.WorldMatrix.Backward, direction) < 0.9)
                     {
-                        thrust.Enabled = true;
+                        if (!thrust.Enabled)
+                            thrust.Enabled = true;
 
                         thrust.ThrustOverridePercentage = (float)percent;
                     }

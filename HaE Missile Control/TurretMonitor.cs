@@ -30,7 +30,7 @@ namespace IngameScript
             public TurretMonitor(Program p)
             {
                 turretList = new List<IMyLargeTurretBase>();
-                p.GridTerminalSystem.GetBlocksOfType(turretList);
+                p.GridTerminalSystem.GetBlocksOfType(turretList, x => x.CubeGrid == p.Me.CubeGrid);
             }
 
             public MyDetectedEntityInfo? Scan()
