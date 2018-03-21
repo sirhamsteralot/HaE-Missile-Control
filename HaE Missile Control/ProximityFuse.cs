@@ -23,16 +23,19 @@ namespace IngameScript
             public Action OnDetonation;
             public Action OnEnemyInRange;
 
-            List<IMySensorBlock> sensors;
-            List<IMyWarhead> warheads;
+            List<IMySensorBlock> sensors = new List<IMySensorBlock>();
+            List<IMyWarhead> warheads = new List<IMyWarhead>();
 
             IMyShipController rc;
             double detonationDist;
 
-            public ProximityFuse(IMyShipController rc, double detonationDist)
+            public ProximityFuse(IMyShipController rc, double detonationDist, Program P)
             {
                 this.rc = rc;
                 this.detonationDist = detonationDist;
+
+                P.GridTerminalSystem.GetBlocksOfType(sensors);
+                P.GridTerminalSystem.GetBlocksOfType(warheads);
             }
 
             public void DetectSensor()
@@ -62,6 +65,9 @@ namespace IngameScript
 
             private bool IsEnemyInRange(MyDetectedEntityInfo info)
             {
+                if (info.IsEmpty())
+                    return false;
+
                 if (info.Relationship != MyRelationsBetweenPlayerAndBlock.Enemies && info.Relationship != MyRelationsBetweenPlayerAndBlock.Neutral)
                     return false;
 
