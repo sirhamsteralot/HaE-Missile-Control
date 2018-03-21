@@ -21,6 +21,8 @@ namespace IngameScript
         const string RCNAME = "RC";
         const string MAINCAM = "TargetingCamera";
 
+        const float DETONATIONDIST = 10f;
+
         const bool DEBUGMODE = true;
         const bool PROFILING = false;       //Will only work if debugmode is enabled
         const MissileManagementClient.MissileType missileType = MissileManagementClient.MissileType.SRInterceptor;
@@ -35,6 +37,7 @@ namespace IngameScript
         TargetGuidance guidance;
         MissileManagementClient clientSystem;
         TurretMonitor turretMonitor;
+        ProximityFuse proximityFuse;
 
         List<IMyCameraBlock> cameras;
         List<IMyGyro> gyros;
@@ -97,7 +100,7 @@ namespace IngameScript
 
         void EveryTenTick()
         {
-
+            proximityFuse.DetectSensor();
         }
 
         void EveryHundredTick()
@@ -261,6 +264,9 @@ namespace IngameScript
             turretMonitor = new TurretMonitor(this);
             turretMonitor.OnTargetDetected += OnTargetDetected;
             yield return true;
+
+            proximityFuse = new ProximityFuse(rc, DETONATIONDIST);
+            proximityFuse.OnEnemyInRange += proximityFuse.Detonate;
 
             DebugEcho("Initialized!");
         }
