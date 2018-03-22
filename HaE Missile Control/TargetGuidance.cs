@@ -110,7 +110,6 @@ namespace IngameScript
                 accelerationNormal = IPNGain * RelativeVelocityVec.Cross(CalculateRotVec());        //PPN term
                 accelerationNormal += IPNGain * TargetAccel / 2;                                    //APN term
                 accelerationNormal += IPNGain * LosDelta;                                           //HPN term
-                accelerationNormal += NewLos;                                                       //LosBias term
 
                 return accelerationNormal;
             }
