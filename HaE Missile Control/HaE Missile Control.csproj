@@ -106,6 +106,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>
     <Compile Include="MissileManagementClient.cs" />
+    <Compile Include="PID Controller.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectorProjection.cs" />
     <Compile Include="ProximityFuse.cs" />

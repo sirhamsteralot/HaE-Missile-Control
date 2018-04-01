@@ -100,7 +100,7 @@ namespace IngameScript
 
         void EveryTenTick()
         {
-            proximityFuse.DetectSensor();
+            proximityFuse?.DetectSensor();
         }
 
         void EveryHundredTick()
@@ -265,7 +265,7 @@ namespace IngameScript
             turretMonitor.OnTargetDetected += OnTargetDetected;
             yield return true;
 
-            proximityFuse = new ProximityFuse(rc, DETONATIONDIST);
+            proximityFuse = new ProximityFuse(rc, DETONATIONDIST, this);
             proximityFuse.OnEnemyInRange += proximityFuse.Detonate;
 
             DebugEcho("Initialized!");
