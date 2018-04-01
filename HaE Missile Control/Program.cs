@@ -196,7 +196,7 @@ namespace IngameScript
                     break;
                 case "LaunchOut":
                     flightControl.BoostForward(100);
-                    break;
+                    break;            
                 case "UseTurretLockon":
                     useTurretLockon = true;
                     break;

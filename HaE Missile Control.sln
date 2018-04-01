@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HaE Missile Control", "HaE 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HaE Missile GroundStation", "HaE Missile GroundStation\HaE Missile GroundStation.csproj", "{524BD585-ADE2-4D48-9E95-2CDA2DF45D6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReleaseGuidedMissilesScript", "ReleaseGuidedMissilesScript\ReleaseGuidedMissilesScript.csproj", "{31C73199-1171-450D-AD0C-CFD720976E45}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HaE Missile Release", "ReleaseGuidedMissilesScript\HaE Missile Release.csproj", "{31C73199-1171-450D-AD0C-CFD720976E45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

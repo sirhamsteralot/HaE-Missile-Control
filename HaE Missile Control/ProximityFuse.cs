@@ -34,8 +34,8 @@ namespace IngameScript
                 this.rc = rc;
                 this.detonationDist = detonationDist;
 
-                P.GridTerminalSystem.GetBlocksOfType(sensors);
-                P.GridTerminalSystem.GetBlocksOfType(warheads);
+                P.GridTerminalSystem.GetBlocksOfType(sensors, x => x.CubeGrid == P.Me.CubeGrid);
+                P.GridTerminalSystem.GetBlocksOfType(warheads, x => x.CubeGrid == P.Me.CubeGrid);
             }
 
             public void DetectSensor()
