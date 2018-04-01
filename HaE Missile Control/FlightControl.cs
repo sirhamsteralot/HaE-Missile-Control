@@ -44,7 +44,7 @@ namespace IngameScript
 
             public void Main()
             {
-                if (accelerateTarget == null || accelerateTarget == Vector3D.Zero || accelerateTarget == Vector3D.PositiveInfinity || PID_Controller == null)
+                if (accelerateTarget == null || accelerateTarget == Vector3D.Zero || accelerateTarget == Vector3D.PositiveInfinity || PID_Controller == null || !accelerateTarget.IsValid())
                     return;
 
                 Vector3D accelerateTargetNormalized = accelerateTarget;

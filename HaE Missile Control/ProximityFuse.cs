@@ -63,6 +63,12 @@ namespace IngameScript
                 }
             }
 
+            public void OnTargetDetected(MyDetectedEntityInfo target, int ticksFromLastFind)
+            {
+                if (IsEnemyInRange(target))
+                    OnEnemyInRange?.Invoke();
+            }
+
             private bool IsEnemyInRange(MyDetectedEntityInfo info)
             {
                 if (info.IsEmpty())

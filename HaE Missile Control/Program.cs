@@ -21,9 +21,10 @@ namespace IngameScript
         const string RCNAME = "RC";
         const string MAINCAM = "TargetingCamera";
 
-        const float DETONATIONDIST = 10f;
+        const float DETONATIONDIST = 15f;
 
         const bool DEBUGMODE = true;
+        const bool SPECIFICDEBUGMODE = true;
         const bool PROFILING = false;       //Will only work if debugmode is enabled
         const MissileManagementClient.MissileType missileType = MissileManagementClient.MissileType.SRInterceptor;
 
@@ -72,6 +73,7 @@ namespace IngameScript
             //Parse messages
             if (messages != null)
             {
+                
                 ParseMessages(messages, senderId);
             }
 
@@ -143,6 +145,8 @@ namespace IngameScript
                 DebugEcho($"desiredAccel:\n{desiredAccel}");
                 flightControl.DirectControl(desiredAccel);
             }
+
+            proximityFuse?.OnTargetDetected(target, ticksFromLastFind);
         }
 
         /*=========| Helper Functions |=========*/
@@ -291,6 +295,12 @@ namespace IngameScript
                 _messages.Enqueue(s);
         }
 
+        public static void SpecificDebugEcho(string s)
+        {
+            if (SPECIFICDEBUGMODE)
+                _messages.Enqueue(s);
+        }
+
         public void AddToLog(string s, bool clear = false)
         {
             if (clear)
@@ -301,7 +311,7 @@ namespace IngameScript
 
         void Main(string argument, UpdateType uType)
         { //By inflex
-            if (DEBUGMODE)
+            if (DEBUGMODE || SPECIFICDEBUGMODE)
             {
                 try
                 {
@@ -324,7 +334,7 @@ namespace IngameScript
                     DebugEcho(exceptionDump);
 
                     //Optionally rethrow
-                    throw;
+                    //throw;
                 }
                 if (PROFILING)
                 {

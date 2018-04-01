@@ -102,15 +102,16 @@ namespace IngameScript
                 double IPNGain = (RelativeVelocityVec.Length() * PGAIN) / (MissileVelocityVec.Length() * cos);
 
                 IPNGain = MathHelperD.Clamp(IPNGain, MINN, MAXN);
-                IPNGain = (IPNGain != double.NaN) ? IPNGain : PGAIN;
+                IPNGain = (!double.IsNaN(IPNGain)) ? IPNGain : PGAIN;
 
                 DebugEcho($"IPNGain: {IPNGain:#.###}");
+
 
                 Vector3D accelerationNormal;
                 accelerationNormal = IPNGain * RelativeVelocityVec.Cross(CalculateRotVec());        //PPN term
                 accelerationNormal += IPNGain * TargetAccel / 2;                                    //APN term
                 accelerationNormal += IPNGain * LosDelta;                                           //HPN term
-                accelerationNormal += -rc.GetNaturalGravity();                                      //Gravity term
+                accelerationNormal += -Vector3D.Normalize(rc.GetNaturalGravity());                  //Gravity term
                 accelerationNormal += NewLos;                                                       //LosBias term
 
                 return accelerationNormal;
