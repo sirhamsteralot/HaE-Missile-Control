@@ -30,7 +30,7 @@ namespace IngameScript
 
         const double MAXCASTDIST = 10000;
 
-        private static readonly Queue<string> _messages = new Queue<string>();
+        private static Queue<string> _messages;
 
         LongRangeDetection longRangeDetection;
         ACPWrapper antennaComms;
@@ -58,6 +58,9 @@ namespace IngameScript
 
         public Program()
         {
+            if (DEBUGMODE)
+                _messages = new Queue<string>();
+
             AddToLog("", true);
             Runtime.UpdateFrequency = UpdateFrequency.Update1 | UpdateFrequency.Update10 | UpdateFrequency.Update100;
             initializer = Initialize();
@@ -285,7 +288,10 @@ namespace IngameScript
 
         void EchoDebugQueue()
         {
-            while (_messages.Count > 0)
+            if (!DEBUGMODE)
+                return;
+
+                while (_messages.Count > 0)
                 Echo(_messages.Dequeue());
         }
 
@@ -297,7 +303,7 @@ namespace IngameScript
 
         public static void SpecificDebugEcho(string s)
         {
-            if (SPECIFICDEBUGMODE)
+            if (SPECIFICDEBUGMODE && DEBUGMODE)
                 _messages.Enqueue(s);
         }
 
