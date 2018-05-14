@@ -169,6 +169,15 @@ namespace IngameScript
                     break;
             }
 
+            if (command.StartsWith("TargetLoc"))
+            {
+                string[] split = command.Split('|');
+
+                Vector3D location;
+                if (Vector3D.TryParse(split[1], out location))
+                    NewLongRangeDetection(location);
+            }
+
             return false;
         }
 

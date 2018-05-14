@@ -37,13 +37,25 @@ namespace IngameScript
 
         public void Main(string argument, UpdateType updateSource)
         {
-            switch (argument)
+            if (argument.StartsWith("DeploySingleMissile"))
             {
-                case "DeploySingleMissile":
                     FetchBlocks();
                     DeployMissile();
-                    break;
             }
+            else if (argument.StartsWith("DeployAtTarget"))
+            {
+                string[] split = argument.Split('|');
+
+                Vector3D targetLocation;
+
+                if (Vector3D.TryParse(split[1], out targetLocation))
+                {
+                    FetchBlocks();
+                    DeployMissile(targetLocation);
+                }
+            }
+
+
         }
 
         List<IMyProgrammableBlock> programmableBlocks = new List<IMyProgrammableBlock>();
@@ -82,6 +94,23 @@ namespace IngameScript
                 DeployPair pair = missileDeployPairs[deployPairCount - 1];
 
                 if (pair.guidanceComputer.TryRun("TurretControll"))
+                {
+                    pair.attachmentPoint.Detach();
+
+                    missileDeployPairs.RemoveAt(deployPairCount - 1);
+                }
+            }
+        }
+
+        public void DeployMissile(Vector3D targetPosition)
+        {
+            int deployPairCount = missileDeployPairs.Count;
+
+            if (deployPairCount > 0)
+            {
+                DeployPair pair = missileDeployPairs[deployPairCount - 1];
+
+                if (pair.guidanceComputer.TryRun($"TargetLoc|{targetPosition}"))
                 {
                     pair.attachmentPoint.Detach();
 
