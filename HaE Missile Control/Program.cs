@@ -176,6 +176,9 @@ namespace IngameScript
                 Vector3D location;
                 if (Vector3D.TryParse(split[1], out location))
                     NewLongRangeDetection(location);
+
+                targetGuidance = true;
+                return true;
             }
 
             return false;
