@@ -26,7 +26,20 @@ namespace IngameScript
         public struct DeployPair
         {
             public IMyProgrammableBlock guidanceComputer;
-            public IMyMotorStator attachmentPoint;
+            public Detachable attachmentPoint;
+
+            public struct Detachable
+            {
+                public IMyMotorStator attachmentRotor;
+                public IMyShipMergeBlock attachmentMergeBlock;
+
+                public void Detach()
+                {
+                    attachmentRotor?.Detach();
+                    if (attachmentMergeBlock != null)
+                        attachmentMergeBlock.Enabled = false;
+                }
+            }
         }
         
 
@@ -54,20 +67,51 @@ namespace IngameScript
                     DeployMissile(targetLocation);
                 }
             }
+            else if (argument.StartsWith("DeployMultipleAtTarget"))
+            {
+                string[] split = argument.Split('|');
+
+                Vector3D targetLocation;
+                int count = 0;
+
+                if (Vector3D.TryParse(split[2], out targetLocation) && int.TryParse(split[1], out count))
+                {
+                    FetchBlocks();
+
+                    for (int i = 0; i < count; i++)
+                        DeployMissile(targetLocation);
+                }
+            }
+            else if (argument.StartsWith("DeployMultiple"))
+            {
+                string[] split = argument.Split('|');
+
+                int count = 0;
+
+                if (int.TryParse(split[1], out count))
+                {
+                    FetchBlocks();
+
+                    for (int i = 0; i < count; i++)
+                        DeployMissile();
+                }
+            }
 
 
         }
 
         List<IMyProgrammableBlock> programmableBlocks = new List<IMyProgrammableBlock>();
+        List<IMyMotorStator> attachmentRotors = new List<IMyMotorStator>();
+        List<IMyShipMergeBlock> attachmentMergeBlocks = new List<IMyShipMergeBlock>();
         public void FetchBlocks()
         {
             missileDeployPairs.Clear();
+            attachmentRotors.Clear();
+            
 
-            var attachmentpoints = new List<IMyMotorStator>();
+            GridTerminalSystem.GetBlocksOfType(attachmentRotors, x => x.CustomName.Contains(attachmentPointTag) && x.TopGrid != null);
 
-            GridTerminalSystem.GetBlocksOfType(attachmentpoints, x => x.CustomName.Contains(attachmentPointTag) && x.TopGrid != null);
-
-            foreach (var attachmentPoint in attachmentpoints)
+            foreach (var attachmentPoint in attachmentRotors)
             {
                 var rotorTopGrid = attachmentPoint.TopGrid;
 
@@ -75,14 +119,21 @@ namespace IngameScript
                 GridTerminalSystem.GetBlocksOfType(programmableBlocks, x => x.CubeGrid == rotorTopGrid && x.CustomName.Contains(guidanceComputerTag));
                 if (programmableBlocks.Count > 0)
                 {
-                    DeployPair deployPair;
+                    DeployPair deployPair = new DeployPair();
                     deployPair.guidanceComputer = programmableBlocks[0];
-                    deployPair.attachmentPoint = attachmentPoint;
+
+                    GridTerminalSystem.GetBlocksOfType(attachmentMergeBlocks, x => x.CustomName.Contains(attachmentPointTag) && x.CubeGrid == attachmentPoint.TopGrid);
+                    if (attachmentMergeBlocks.Count > 0)
+                        deployPair.attachmentPoint.attachmentMergeBlock = attachmentMergeBlocks[0];
+                    else
+                        deployPair.attachmentPoint.attachmentRotor = attachmentPoint;
 
                     missileDeployPairs.Add(deployPair);
                 }
                 
             }
+
+            
         }
 
         public void DeployMissile()

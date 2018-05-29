@@ -9,7 +9,29 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HaE Missile GroundStation",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HaE Missile Release", "ReleaseGuidedMissilesScript\HaE Missile Release.csproj", "{31C73199-1171-450D-AD0C-CFD720976E45}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE Autopilot Module", "..\..\..\MDK_Projects\Shared Projects\HaE Autopilot Module\HaE Autopilot Module.shproj", "{4EFA3DC1-C6DF-4853-962D-E2998290B240}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE MathUtils", "..\..\..\MDK_Projects\Shared Projects\VectorUtils\HaE MathUtils.shproj", "{2D034700-8C67-41B0-B3C8-5510D21E52C3}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE Timing", "..\..\..\MDK_Projects\Shared Projects\HaE Timing\HaE Timing.shproj", "{36C0DEEB-8ADE-4156-AEA7-9DF3C620F474}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE EntityTrackingModule", "..\..\..\MDK_Projects\Shared Projects\EntityTrackingModule\HaE EntityTrackingModule.shproj", "{BFA2687A-1112-44DF-BC64-F0FC7F2A1D32}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE GridTerminalSystemUtils", "..\..\..\MDK_Projects\Shared Projects\HaE GridTerminalSystemUtils\HaE GridTerminalSystemUtils.shproj", "{EC6DFC99-0769-41FC-96A3-029FBEB3A7A1}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\..\MDK_Projects\Shared Projects\EntityTrackingModule\EntityTrackingModule.projitems*{2b07a92f-229c-47ae-a23c-cd596283fe39}*SharedItemsImports = 4
+		..\..\..\MDK_Projects\Shared Projects\HaE Autopilot Module\HaE Autopilot Module.projitems*{2b07a92f-229c-47ae-a23c-cd596283fe39}*SharedItemsImports = 4
+		..\..\..\MDK_Projects\Shared Projects\HaE GridTerminalSystemUtils\HaE GridTerminalSystemUtils.projitems*{2b07a92f-229c-47ae-a23c-cd596283fe39}*SharedItemsImports = 4
+		..\..\..\MDK_Projects\Shared Projects\HaE Timing\HaE Timing.projitems*{2b07a92f-229c-47ae-a23c-cd596283fe39}*SharedItemsImports = 4
+		..\..\..\MDK_Projects\Shared Projects\VectorUtils\VectorUtils.projitems*{2b07a92f-229c-47ae-a23c-cd596283fe39}*SharedItemsImports = 4
+		..\..\..\MDK_Projects\Shared Projects\VectorUtils\VectorUtils.projitems*{2d034700-8c67-41b0-b3c8-5510d21e52c3}*SharedItemsImports = 13
+		..\..\..\MDK_Projects\Shared Projects\HaE Timing\HaE Timing.projitems*{36c0deeb-8ade-4156-aea7-9df3c620f474}*SharedItemsImports = 13
+		..\..\..\MDK_Projects\Shared Projects\HaE Autopilot Module\HaE Autopilot Module.projitems*{4efa3dc1-c6df-4853-962d-e2998290b240}*SharedItemsImports = 13
+		..\..\..\MDK_Projects\Shared Projects\EntityTrackingModule\EntityTrackingModule.projitems*{bfa2687a-1112-44df-bc64-f0fc7f2a1d32}*SharedItemsImports = 13
+		..\..\..\MDK_Projects\Shared Projects\HaE GridTerminalSystemUtils\HaE GridTerminalSystemUtils.projitems*{ec6dfc99-0769-41fc-96a3-029fbeb3a7a1}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 	EndGlobalSection

@@ -55,8 +55,9 @@ namespace IngameScript
                 if (accelerateTargetLength < negligible)
                     accelerateTargetNormalized = Vector3D.Normalize(control.GetShipVelocities().LinearVelocity);
 
-                GyroUtils.PointInDirection(gyros, control, accelerateTargetNormalized, multiplier);
+                GyroUtils.PointInDirection(gyros, control, accelerateTarget, multiplier);
                 ThrustUtils.SetThrustBasedDot(thrusters, accelerateTargetNormalized, multiplier);
+                
 
                 if (accelerateInDirection && control.GetShipSpeed() >= (speedLimit - 0.01))
                 {
