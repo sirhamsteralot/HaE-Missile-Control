@@ -39,6 +39,9 @@ namespace IngameScript
         MissileManagementClient clientSystem;
         TurretMonitor turretMonitor;
         ProximityFuse proximityFuse;
+        IngameTime ingameTime;
+        EntityTracking_Module entityTracking;
+        Autopilot_Module autopilot;
 
         List<IMyCameraBlock> cameras;
         List<IMyGyro> gyros;
@@ -271,7 +274,21 @@ namespace IngameScript
             mainCam = GetBlockWithNameOnGrid(MAINCAM) as IMyCameraBlock;
             yield return true;
 
-            flightControl = new FlightControl(rc, gyros, thrusters);
+            var GTSUtils = new GridTerminalSystemUtils(Me, GridTerminalSystem);
+            ingameTime = new IngameTime();
+            yield return true;
+
+            entityTracking = new EntityTracking_Module(GTSUtils, rc, mainCam);
+            yield return true;
+
+            var pid = new PID_Controller.PIDSettings
+            {
+                PGain = 1
+            };
+            autopilot = new Autopilot_Module(GTSUtils, rc, ingameTime, pid, pid, entityTracking);
+            yield return true;
+
+            flightControl = new FlightControl(rc, gyros, thrusters, autopilot);
             yield return true;
 
             guidance = new TargetGuidance(rc);

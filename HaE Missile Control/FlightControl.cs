@@ -32,11 +32,13 @@ namespace IngameScript
             private bool accelerateInDirection = false;
 
             private PID_Controller PID_Controller = new PID_Controller(0.6, 3, 8);
+            private Autopilot_Module autopilotModule;
 
             private Vector3D accelerateTarget;
 
-            public FlightControl(IMyShipController control, List<IMyGyro> gyros, List<IMyThrust> thrusters)
+            public FlightControl(IMyShipController control, List<IMyGyro> gyros, List<IMyThrust> thrusters, Autopilot_Module autopilotModule)
             {
+                this.autopilotModule = autopilotModule;
                 this.control = control;
                 this.gyros = gyros;
                 this.thrusters = thrusters;
@@ -55,8 +57,9 @@ namespace IngameScript
                 if (accelerateTargetLength < negligible)
                     accelerateTargetNormalized = Vector3D.Normalize(control.GetShipVelocities().LinearVelocity);
 
-                GyroUtils.PointInDirection(gyros, control, accelerateTarget, multiplier);
-                ThrustUtils.SetThrustBasedDot(thrusters, accelerateTargetNormalized, multiplier);
+                GyroUtils.PointInDirection(gyros, control, accelerateTargetNormalized, multiplier);
+                //ThrustUtils.SetThrustBasedDot(thrusters, accelerateTargetNormalized, multiplier);
+                autopilotModule.ThrustToVelocity(control.GetShipVelocities().LinearVelocity + accelerateTarget);
                 
 
                 if (accelerateInDirection && control.GetShipSpeed() >= (speedLimit - 0.01))
