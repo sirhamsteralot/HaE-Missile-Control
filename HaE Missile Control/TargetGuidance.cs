@@ -84,12 +84,10 @@ namespace IngameScript
 
             private Vector3D ExperimentalGuidance()
             {
-                Vector3D nRelativeVelocityVec = RelativeVelocityVec;
-                double mRelativeVelocity = nRelativeVelocityVec.Normalize();
-
-                Vector3D accelerationNormal;
-                accelerationNormal = PGAIN * LosDelta;                                          //HPN term
-                accelerationNormal += NewLos;                                                   //LosBias term
+                Vector3D accelerationNormal = PGAIN * RelativeVelocityVec.Cross(CalculateRotVec());      //PPN term
+                accelerationNormal += NewLos * (1 / accelerationNormal.Length());
+                accelerationNormal -= VectorUtils.ProjectOnPlane(NewLos,-RelativeVelocityVec);
+                accelerationNormal += MissileVelocityVec;
 
                 return accelerationNormal;
             }
