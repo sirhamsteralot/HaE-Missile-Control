@@ -90,10 +90,10 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="MDKUtilities">
-      <HintPath>C:\Users\SirHa\AppData\Local\Microsoft\VisualStudio\15.0_d85c6838\Extensions\0ulfhm1o.5ss\MDKUtilities.dll</HintPath>
+      <HintPath>c:\users\sirha\appdata\local\microsoft\visualstudio\15.0_d85c6838\extensions\caa0jahn.l1d\MDKUtilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Analyzer Include="C:\Users\SirHa\AppData\Local\Microsoft\VisualStudio\15.0_d85c6838\Extensions\0ulfhm1o.5ss\Analyzers\MDKAnalyzer.dll" />
+    <Analyzer Include="c:\users\sirha\appdata\local\microsoft\visualstudio\15.0_d85c6838\extensions\caa0jahn.l1d\Analyzers\MDKAnalyzer.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MDK\Bootstrapper.cs" />

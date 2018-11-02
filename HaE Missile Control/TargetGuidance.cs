@@ -26,6 +26,8 @@ namespace IngameScript
             private const float MAXN = 20f;
             private const float MINN = -20f;
 
+            private const float MAXSPEED = 100f;
+
             int _ticksFromLastFind = 1;
             int TicksFromLastFind { get { return (_ticksFromLastFind >= 1) ? _ticksFromLastFind : 1; } }
 
@@ -69,7 +71,7 @@ namespace IngameScript
             {
                 UpdateTargetInfo(info, ticksFromLastFind);
 
-                return HPN();
+                return PPN();
                 //return APN();
                 //return PPN();
                 //return ExperimentalGuidance();
@@ -77,17 +79,15 @@ namespace IngameScript
 
             private Vector3D PPN()
             {
-                Vector3D accelerationNormal = PGAIN * RelativeVelocityVec.Cross(CalculateRotVec());      //PPN term
+                Vector3D accelerationNormal = -PGAIN * RelativeVelocityVec.Length() * (NewLos).Cross(CalculateRotVec());      //PPN term
+                accelerationNormal += NewLos * (MAXSPEED - rc.GetShipSpeed());
 
                 return accelerationNormal;
             }
 
             private Vector3D ExperimentalGuidance()
             {
-                Vector3D accelerationNormal = PGAIN * RelativeVelocityVec.Cross(CalculateRotVec());      //PPN term
-                accelerationNormal += NewLos * (1 / accelerationNormal.Length());
-                accelerationNormal -= VectorUtils.ProjectOnPlane(NewLos,-RelativeVelocityVec);
-                accelerationNormal += MissileVelocityVec;
+                Vector3D accelerationNormal = -PGAIN * RelativeVelocityVec.Length() * (NewLos).Cross(CalculateRotVec());      //PPN term
 
                 return accelerationNormal;
             }
@@ -106,7 +106,7 @@ namespace IngameScript
 
 
                 Vector3D accelerationNormal;
-                accelerationNormal = IPNGain * RelativeVelocityVec.Cross(CalculateRotVec());        //PPN term
+                accelerationNormal = PPN();        //PPN term
                 accelerationNormal += IPNGain * TargetAccel / 2;                                    //APN term
                 accelerationNormal += IPNGain * LosDelta;                                           //HPN term
                 accelerationNormal += -rc.GetNaturalGravity();                                      //Gravity term
@@ -131,8 +131,8 @@ namespace IngameScript
             private Vector3D CalculateRotVec()
             {
                 Vector3D RxV = Vector3D.Cross(RangeVec, RelativeVelocityVec);
-                //Vector3D RdR = RangeVec * RangeVec;
-                double RdR = RangeVec.LengthSquared();
+                Vector3D RdR = RangeVec * RangeVec;
+                //double RdR = RangeVec.LengthSquared();
 
                 return RxV / RdR;
             }
